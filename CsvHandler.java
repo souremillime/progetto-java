@@ -5,7 +5,8 @@ import java.io.IOException;
 
 public class CsvHandler{
     String csvPath;
-    int numCol, numLines;
+    int numCol, numRighe;
+    String[][] mappaFile;
     BufferedReader reader;
     FileWriter writer;
 
@@ -43,10 +44,10 @@ public class CsvHandler{
         while(reader.readLine() != null){
             count++;
         }
-        this.numLines = count;
+        this.numRighe = count;
     //debug
         System.out.println("numCol: " + numCol);
-        System.out.println("numLine: " + numLines);
+        System.out.println("numLine: " + numRighe);
 
     }
 /*
@@ -117,6 +118,15 @@ public class CsvHandler{
     //legge in continuazione dalla riga precedentemente letta
     public String[] letturaConsecutiva() throws IOException{
         return csvToString(reader.readLine());
+    }
+
+    void leggiFile() throws IOException{
+        String[][] outString = new String[numRighe][numCol];
+        reader.reset();
+        for(int i = 0; i < numRighe; i++){
+            outString[i] = csvToString(reader.readLine());
+        }
+        this.mappaFile = outString;
     }
 
     /*scrittura*/
