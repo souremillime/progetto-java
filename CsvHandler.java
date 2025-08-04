@@ -38,15 +38,15 @@ public class CsvHandler{
     /*lettura*/
     //conversione da codifica CSV a un array di stringe contenenti le informazioni delle singole colonne
     private String[] csvToString(String csvString){
-        int columnNum = 0, lastComma = 0;
-        String outString[] = new String[numCol-1];
+        int columnNum = 0, lastComma = -1; //inizia da -1 visto che nel substring viene sommato 1, questo per fare laggere il brimo elemento dalla riga 0
+        String outString[] = new String[numCol];
         
-        for(int i = 0; i< (csvString.length() - 1); i++){
+        for(int i = 0; i< (csvString.length()); i++){
             //ricerca virgole
             if (csvString.charAt(i) == ',') {
                 System.out.println("trovato ,");//debug
 
-                outString[columnNum] = csvString.substring(lastComma+1, i);
+                outString[columnNum] = csvString.substring(lastComma +1, i);
                 System.out.println(outString[columnNum] + i);
 
                 //pulizia dalle eventuali virgolette "", per la sintassi csv
@@ -65,7 +65,7 @@ public class CsvHandler{
             }
         }
         //lettura dell'ultima colonna
-        outString[columnNum-1] = csvString.substring(lastComma+1, csvString.length());
+        outString[columnNum] = csvString.substring(lastComma+1, csvString.length());
         if (outString[columnNum].contains("\"")) {
             outString[columnNum].replaceAll("\"", "\0");
         }
@@ -85,6 +85,8 @@ public class CsvHandler{
         }
         this.numCol = count+1;
 
+        System.out.println("numCol: " + numCol);
+
     }
 
     /*scrittura*/
@@ -94,7 +96,7 @@ public class CsvHandler{
         if (linea.length > numCol){
             System.err.println("oggetto troppo lungo");//debug
         }else{
-            try(FileWriter writer = new FileWriter(csvPath, true)){
+            try(FileWriter writer = new FileWriter(csvPath)){
                 for(int i = 0; i<linea.length;i++ ){
                     writer.write(linea[i] + ",");
                 }
