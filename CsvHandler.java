@@ -8,7 +8,6 @@ public class CsvHandler{
     int numCol, numRighe;
     String[][] mappaFile;
     BufferedReader reader;
-    FileWriter writer;
 
 //inizializazione oggetto
 
@@ -50,32 +49,10 @@ public class CsvHandler{
         System.out.println("numLine: " + numRighe);
 
     }
-/*
-    public void loadFile(String csvPath){
-        this.csvPath = csvPath;
-        try(BufferedReader reader = new BufferedReader(new FileReader(csvPath))){
-            definisciColonne(reader.readLine());
-            if(this.numCol == 1){
-                System.out.println("file inizializzato");//debug
-            }
-
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-
-    }*/ //debug
 
     //viene letta la prima riga e resettato il reader
     public String[] getFirstLine(){
-        String[] outStrings = new String[numCol];
-        try{
-            reader.reset();
-            outStrings = csvToString(reader.readLine());
-
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-        return outStrings;
+        return this.mappaFile[0];
     }
     /*lettura*/
     //conversione da codifica CSV a un array di stringe contenenti le informazioni delle singole colonne
@@ -121,10 +98,11 @@ public class CsvHandler{
     }
 
     void leggiFile() throws IOException{
-        String[][] outString = new String[numRighe][numCol];
-        reader.reset();
-        for(int i = 0; i < numRighe; i++){
-            outString[i] = csvToString(reader.readLine());
+        definisciDimensioni();
+        String[][] outString = new String[this.numRighe][this.numCol];
+        this.reader.reset();
+        for(int i = 0; i < this.numRighe; i++){
+            outString[i] = csvToString(this.reader.readLine());
         }
         this.mappaFile = outString;
     }
@@ -142,16 +120,66 @@ public class CsvHandler{
                     writer.write(riga[i] + ",");
                 }
                 writer.write(riga[numCol-1]);
+                
+                leggiFile(); //aggiorno la mappa del file
+
             }catch(IOException e){
                 e.printStackTrace();
             }
         }
+    }
+
+    void riscriviRigaCSV(String riga[], int posi){
+        if (riga.length > numCol){
+            System.err.println("oggetto troppo lungo");//debug
+        }else if(posi > numRighe){
+            System.err.println("coordinate sbagliate");//debug
+        }else{
+            this.mappaFile[posi] = riga;
+        
+        }
 
     }
 
-    void riscriviRigaCSV(String riga[]){
+    String stringToCSV(String[] inString){
+        String outString = "";
+
+        for(int i = 0; i< inString.length-1; i++){
+            inString[i] = inString[i].trim();
+
+            if(inString[i].contains("\"")){
+                inString[i] = inString[i].replaceAll("\"", "\"\"");
+            }
+            if(inString[i].contains("\n")){
+                inString[i] = "\"" + inString[i] + "\"";
+            }
+            
+            outString += inString[i] + ",";
+        }
+        outString += inString[numCol-1] + "\n";
+
+        return outString;
 
     }
 
+    public void salvaModifiche(){
+        try{
+            //cancello dati nel file
+            FileWriter writer = new FileWriter(csvPath);//modalità sovrascrittura
+            writer.write("");
+            writer.close();
+            
+            //inizio scrittura
+            writer = new FileWriter(csvPath, true);//modalità sovrascrittura
+
+            for(int i = 0; i<numRighe;i++ ){
+                writer.write(stringToCSV(mappaFile[i]));
+            }
+            writer.close();
+
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
 
 }
