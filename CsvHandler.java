@@ -9,14 +9,15 @@ public class CsvHandler{
     String[][] mappaFile;
     BufferedReader reader;
 
-//inizializazione oggetto
+//inizializzazione oggetto
 
     //costruttore
     public CsvHandler(String csvPath) {
         this.csvPath = csvPath;
         try{
             reader = new BufferedReader(new FileReader(csvPath));
-            definisciDimensioni();
+            leggiFile();
+
             if(this.numCol == 1){
                 System.out.println("file inizializzato");//debug
             }
@@ -26,9 +27,14 @@ public class CsvHandler{
         }
     }
 
-    //definisce il numero di colonne e il numero di righe che ha un file CSV
+    //definisce il numero di colonne e il numero di righe che ha un file CSV. Il reader viene anche resettato
     private void definisciDimensioni() throws IOException{
+        this.reader.close();
+        this.reader = new BufferedReader(new FileReader(csvPath));
         String csvString = reader.readLine();
+        if(csvString == null){
+            System.err.println("file vuoto");
+        }else{
         int count = 0;
         for (int i = 0; i < csvString.length(); i++) {
             if (csvString.charAt(i) == ',') {
@@ -44,6 +50,9 @@ public class CsvHandler{
             count++;
         }
         this.numRighe = count;
+        }
+        this.reader.close();//chiusura del file
+        this.reader = new BufferedReader(new FileReader(csvPath));//riavvio reder
     //debug
         System.out.println("numCol: " + numCol);
         System.out.println("numLine: " + numRighe);
@@ -70,7 +79,7 @@ public class CsvHandler{
 
                 //pulizia dalle eventuali virgolette "", per la sintassi csv
                 if (outString[columnNum].contains("\"")) {
-                    outString[columnNum].replaceAll("\"", "\0");
+                    outString[columnNum] = outString[columnNum].replaceAll("\"", "\0");
                 }
 
                 //riposizionamento degli indici 
@@ -92,40 +101,40 @@ public class CsvHandler{
         return outString;
     }
 
-    //legge in continuazione dalla riga precedentemente letta
+    //legge in continuazione dalla riga precedentemente letta. <- fine riga non gestito!!!
     public String[] letturaConsecutiva() throws IOException{
         return csvToString(reader.readLine());
     }
 
-    void leggiFile() throws IOException{
+    //legge l'intero file e lo salva in memoria. Il reader viene resettato
+    public void leggiFile() throws IOException{
         definisciDimensioni();
         String[][] outString = new String[this.numRighe][this.numCol];
-        this.reader.reset();
         for(int i = 0; i < this.numRighe; i++){
             outString[i] = csvToString(this.reader.readLine());
         }
+        reader.close();
+        reader = new BufferedReader(new FileReader(csvPath));
         this.mappaFile = outString;
     }
 
-    /*scrittura*/
+/*scrittura*/
 
     //scrittura di una riga CSV
     void nuovaRigaCSV(String riga[]){
         if (riga.length > numCol){
             System.err.println("oggetto troppo lungo");//debug
         }else{
-            try(FileWriter writer = new FileWriter(csvPath, true)){
-                writer.write("\n");
-                for(int i = 0; i<riga.length-1;i++ ){
-                    writer.write(riga[i] + ",");
-                }
-                writer.write(riga[numCol-1]);
-                
-                leggiFile(); //aggiorno la mappa del file
+            numRighe++;
+            String[][] nuovaMappa = new String[numRighe][numCol];
 
-            }catch(IOException e){
-                e.printStackTrace();
+            for (int i = 0; i < numRighe - 1; i++) {
+                nuovaMappa[i] = mappaFile[i];
             }
+
+            nuovaMappa[numRighe-1] = riga;
+            mappaFile = nuovaMappa;
+            System.gc();
         }
     }
 
@@ -143,10 +152,10 @@ public class CsvHandler{
 
     String stringToCSV(String[] inString){
         String outString = "";
-
+        //
         for(int i = 0; i< inString.length-1; i++){
             inString[i] = inString[i].trim();
-
+            //verifica della corretta sintassi per il csv, raddoppio eventuali virgolette o le aggiungo in caso di \n
             if(inString[i].contains("\"")){
                 inString[i] = inString[i].replaceAll("\"", "\"\"");
             }
@@ -156,7 +165,7 @@ public class CsvHandler{
             
             outString += inString[i] + ",";
         }
-        outString += inString[numCol-1] + "\n";
+        outString += inString[numCol-1];
 
         return outString;
 
@@ -171,9 +180,11 @@ public class CsvHandler{
             
             //inizio scrittura
             writer = new FileWriter(csvPath, true);//modalità sovrascrittura
+                
+            writer.write(stringToCSV(mappaFile[0]));//inizia senza capoverso
 
-            for(int i = 0; i<numRighe;i++ ){
-                writer.write(stringToCSV(mappaFile[i]));
+            for(int i = 1; i<numRighe;i++ ){
+                writer.write("\n" + stringToCSV(mappaFile[i]));//con capoverso
             }
             writer.close();
 
