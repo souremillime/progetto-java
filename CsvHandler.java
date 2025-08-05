@@ -34,6 +34,8 @@ public class CsvHandler{
         String csvString = reader.readLine();
         if(csvString == null){
             System.err.println("file vuoto");
+            this.numCol = 0;
+            this.numRighe = 0;
         }else{
         int count = 0;
         for (int i = 0; i < csvString.length(); i++) {
@@ -44,26 +46,52 @@ public class CsvHandler{
             }
         }
         this.numCol = count+1;
-        count = 1;
+        count = 0;
+        int numVirgolette = 0;
 
-        while(reader.readLine() != null){
-            count++;
+        while(csvString != null){
+
+                if(csvString.contains("\"")){
+                    System.out.println("trovata \"");//debug
+                    int i = 0;
+                    while(i < csvString.length()){
+                        if(csvString.charAt(i) == '"'){
+                            numVirgolette++;
+                        }
+                        i++;
+
+                    }
+                }
+                if(numVirgolette%2 == 1){
+
+                    System.out.println("continue: " + numVirgolette + csvString);//debug
+                    csvString = reader.readLine();
+                    continue;
+                }else{
+                    count++;
+                    numVirgolette = 0;
+                    System.out.println("++");//debug
+                }
+            csvString = reader.readLine();
+            System.out.println("stringa: " + csvString);
+
         }
+
         this.numRighe = count;
         }
+        System.out.println("righe: " + numRighe + "\n colonne: " + numCol); //debug
         this.reader.close();//chiusura del file
         this.reader = new BufferedReader(new FileReader(csvPath));//riavvio reder
-    //debug
-        System.out.println("numCol: " + numCol);
-        System.out.println("numLine: " + numRighe);
 
     }
 
-    //viene letta la prima riga e resettato il reader
+    //viene letta la prima riga della mappa del file
     public String[] getFirstLine(){
         return this.mappaFile[0];
     }
-    /*lettura*/
+
+/*lettura*/
+
     //conversione da codifica CSV a un array di stringe contenenti le informazioni delle singole colonne
     public String[] csvToString(String csvString){
         int columnNum = 0, lastComma = -1; //inizia da -1 visto che nel substring viene sommato 1, questo per fare laggere il primo elemento dalla riga 0
@@ -108,10 +136,36 @@ public class CsvHandler{
 
     //legge l'intero file e lo salva in memoria. Il reader viene resettato
     public void leggiFile() throws IOException{
+        String rigaLetta = "";
         definisciDimensioni();
         String[][] outString = new String[this.numRighe][this.numCol];
-        for(int i = 0; i < this.numRighe; i++){
-            outString[i] = csvToString(this.reader.readLine());
+        int i = 0;                     
+        int numVirgolette = 0;
+        while(i < this.numRighe){
+            rigaLetta = this.reader.readLine();
+            System.out.println("riga letta2: "+ rigaLetta);//debug
+
+            if(rigaLetta.contains("\"")){
+
+                for(int j = 0; j< rigaLetta.length(); j++){
+                    if(rigaLetta.charAt(j) == '"'){
+                        numVirgolette++;
+                        System.out.println("virgolette: " + numVirgolette);
+                    }
+
+                }
+            }
+                if(numVirgolette%2 == 1){     
+                    System.out.println("continue: " + numVirgolette);//debug
+                    continue;
+                }else{
+                    outString[i] = csvToString(rigaLetta);
+                    System.out.println("nuova Riga");
+                    rigaLetta = "";
+                    numVirgolette = 0;
+                    i++;
+                }
+                
         }
         reader.close();
         reader = new BufferedReader(new FileReader(csvPath));
@@ -152,7 +206,7 @@ public class CsvHandler{
 
     String stringToCSV(String[] inString){
         String outString = "";
-        //
+
         for(int i = 0; i< inString.length-1; i++){
             inString[i] = inString[i].trim();
             //verifica della corretta sintassi per il csv, raddoppio eventuali virgolette o le aggiungo in caso di \n
