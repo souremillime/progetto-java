@@ -29,65 +29,85 @@ public class CsvHandler{
 
     //definisce il numero di colonne e il numero di righe che ha un file CSV. Il reader viene anche resettato
     private void definisciDimensioni() throws IOException{
+        //resetto il reder
         this.reader.close();
         this.reader = new BufferedReader(new FileReader(csvPath));
+        //leggo la prima riga del file
         String csvString = reader.readLine();
+        //verifico che non sia vuoto
         if(csvString == null){
-            System.err.println("file vuoto");
+            System.err.println("file vuoto");//debug
             this.numCol = 0;
             this.numRighe = 0;
         }else{
         int count = 0;
+        //inizio a contare il numero di colonne
         for (int i = 0; i < csvString.length(); i++) {
             if (csvString.charAt(i) == ',') {
                 count++;
-            } else if (csvString.charAt(i) == '"') {
-                while (csvString.charAt(i++) != '"');
+            } else if (csvString.charAt(i) == '"') { 
+                //se viene trovata una virgoletta si salta il contenuto della stringa fino alla prossima
+                do{
+                    //se si arriva a fine riga si concatena la riga seguante
+                    if(i == csvString.length()-1){
+                        csvString += reader.readLine();
+                    }
+                    i++;
+                }while (csvString.charAt(i) != '"');// do while perchè altrimenti si leggerebbe anche la prima virgoletta che terminerebbe il ciclo
             }
         }
+        //salvo il numero di colonne
         this.numCol = count+1;
-        count = 0;
-        int numVirgolette = 0;
+        count = 0; //resetto il contatore per le righe
+        int numVirgolette = 0; //avvio il contatore per le virgolette
 
+        //leggo il file fino a che non finisce
         while(csvString != null){
-
-                if(csvString.contains("\"")){
-                    System.out.println("trovata \"");//debug
-                    int i = 0;
-                    while(i < csvString.length()){
-                        if(csvString.charAt(i) == '"'){
-                            numVirgolette++;
-                        }
-                        i++;
-
+            //verifico la presenza di virolette
+            if(csvString.contains("\"")){
+                System.out.println("trovata \"");//debug
+                int i = 0;
+                //conto il numero di virgolette presenti nella stringa letta
+                while(i < csvString.length()){
+                    if(csvString.charAt(i) == '"'){
+                        numVirgolette++;
                     }
-                }
-                if(numVirgolette%2 == 1){
+                    i++;
 
-                    System.out.println("continue: " + numVirgolette + csvString);//debug
-                    csvString = reader.readLine();
-                    continue;
-                }else{
-                    count++;
-                    numVirgolette = 0;
-                    System.out.println("++");//debug
                 }
-            csvString = reader.readLine();
+            }
+            //se le virgolette sono dispari, vuol dire probabilmente che la seguente si trova nella riga seguente
+            if(numVirgolette%2 == 1){
+
+                System.out.println("continue: " + numVirgolette + csvString);//debug
+                csvString = reader.readLine();
+                continue;// ripeto il ciclo 
+            }else{//se non ci sono virgolette o le virgolette sono pari, vul dire che la riga è finita
+
+                count++;
+                numVirgolette = 0;
+                System.out.println("++");//debug
+            }
+            csvString = reader.readLine(); // inizio la lettura della riga segunete
             System.out.println("stringa: " + csvString);
 
         }
 
-        this.numRighe = count;
+        this.numRighe = count; // salvo il numero di righe
         }
         System.out.println("righe: " + numRighe + "\n colonne: " + numCol); //debug
         this.reader.close();//chiusura del file
-        this.reader = new BufferedReader(new FileReader(csvPath));//riavvio reder
+        this.reader = new BufferedReader(new FileReader(csvPath));//riavvio reader
 
     }
 
     //viene letta la prima riga della mappa del file
     public String[] getFirstLine(){
-        return this.mappaFile[0];
+        String[] firsLine = new String[numCol];
+        for(int i = 0; i<numCol;i++){
+            firsLine[i] = this.mappaFile[0][i];
+        }
+        return firsLine;
     }
 
 /*lettura*/
@@ -103,11 +123,16 @@ public class CsvHandler{
                 System.out.println("trovato ,");//debug
 
                 outString[columnNum] = csvString.substring(lastComma +1, i);
-                System.out.println(outString[columnNum] + i);
+                outString[columnNum] = outString[columnNum].trim();
+                System.out.println(outString[columnNum] + i);//debug
 
                 //pulizia dalle eventuali virgolette "", per la sintassi csv
-                if (outString[columnNum].contains("\"")) {
-                    outString[columnNum] = outString[columnNum].replaceAll("\"", "\0");
+                if (outString[columnNum].startsWith("\"") && outString[columnNum].endsWith("\"")) {
+                    outString[columnNum] = outString[columnNum].substring(1, outString[columnNum].length()-1);
+                    if (outString[columnNum].contains("\"\"")) {
+                        outString[columnNum] = outString[columnNum].replaceAll("\"\"", "\"");
+                    }
+                    System.out.println("virgolette: " + outString[columnNum]);
                 }
 
                 //riposizionamento degli indici 
@@ -115,16 +140,23 @@ public class CsvHandler{
                 columnNum++;
 
                 //si ignorano i contenuti delle virgolette, questo per non interferire con eventuali virgole
-            } else if (csvString.charAt(i) == '"') {
+            } else if ((csvString.charAt(i) == '"')) {
                 System.out.println("trovato \"");
-                while (csvString.charAt(i++) != '"');
+                do {
+                    i++;
+                    System.out.println("index: " + i);
+                }while(csvString.charAt(i) != '"');
             }
         }
         //lettura dell'ultima colonna
         outString[columnNum] = csvString.substring(lastComma+1, csvString.length());
-        if (outString[columnNum].contains("\"")) {
-            outString[columnNum].replaceAll("\"", "\0");
-        }
+        if (outString[columnNum].startsWith("\"") && outString[columnNum].endsWith("\"")) {
+                    outString[columnNum] = outString[columnNum].substring(1, outString[columnNum].length()-1);
+                    if (outString[columnNum].contains("\"\"")) {
+                        outString[columnNum] = outString[columnNum].replaceAll("\"\"", "\"");
+                    }
+                    System.out.println("virgolette: " + outString[columnNum]);
+                }
 
         return outString;
     }
@@ -142,9 +174,9 @@ public class CsvHandler{
         int i = 0;                     
         int numVirgolette = 0;
         while(i < this.numRighe){
-            rigaLetta = this.reader.readLine();
+            rigaLetta += this.reader.readLine();
             System.out.println("riga letta2: "+ rigaLetta);//debug
-
+            numVirgolette = 0;
             if(rigaLetta.contains("\"")){
 
                 for(int j = 0; j< rigaLetta.length(); j++){
@@ -156,13 +188,13 @@ public class CsvHandler{
                 }
             }
                 if(numVirgolette%2 == 1){     
+                    rigaLetta += "\n";
                     System.out.println("continue: " + numVirgolette);//debug
                     continue;
                 }else{
                     outString[i] = csvToString(rigaLetta);
                     System.out.println("nuova Riga");
                     rigaLetta = "";
-                    numVirgolette = 0;
                     i++;
                 }
                 
@@ -207,19 +239,26 @@ public class CsvHandler{
     String stringToCSV(String[] inString){
         String outString = "";
 
-        for(int i = 0; i< inString.length-1; i++){
+        for(int i = 0; i< inString.length; i++){
             inString[i] = inString[i].trim();
-            //verifica della corretta sintassi per il csv, raddoppio eventuali virgolette o le aggiungo in caso di \n
+                System.out.println("begin " + inString[i]);//debug
+            //verifica della corretta sintassi per il csv, raddoppio eventuali virgolette o le aggiungo in caso di \n o di virgole
             if(inString[i].contains("\"")){
-                inString[i] = inString[i].replaceAll("\"", "\"\"");
+                //inString[i] = inString[i].replaceAll("\"", "\"\"");
+                System.out.println("replaced \"\": " + i);//debug
             }
-            if(inString[i].contains("\n")){
+            if(inString[i].contains("\n") || inString[i].contains(",")){
+                System.out.println("fine a: " + inString[i]); //debug
                 inString[i] = "\"" + inString[i] + "\"";
+
+
+                System.out.println("fine b: " + inString[i] + i); //debug
             }
             
             outString += inString[i] + ",";
+            System.out.println("out: " + outString);
         }
-        outString += inString[numCol-1];
+        outString = outString.substring(0,outString.length()-1);
 
         return outString;
 
@@ -237,7 +276,10 @@ public class CsvHandler{
                 
             writer.write(stringToCSV(mappaFile[0]));//inizia senza capoverso
 
+                System.out.println("mappa 1: "+ mappaFile[0][0]);
+
             for(int i = 1; i<numRighe;i++ ){
+                System.out.println("mappa: "+ mappaFile[i][0]);
                 writer.write("\n" + stringToCSV(mappaFile[i]));//con capoverso
             }
             writer.close();
