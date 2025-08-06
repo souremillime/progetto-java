@@ -244,7 +244,7 @@ public class CsvHandler{
                 System.out.println("begin " + inString[i]);//debug
             //verifica della corretta sintassi per il csv, raddoppio eventuali virgolette o le aggiungo in caso di \n o di virgole
             if(inString[i].contains("\"")){
-                //inString[i] = inString[i].replaceAll("\"", "\"\"");
+                inString[i] = inString[i].replaceAll("\"", "\"\"");
                 System.out.println("replaced \"\": " + i);//debug
             }
             if(inString[i].contains("\n") || inString[i].contains(",")){
