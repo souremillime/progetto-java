@@ -166,9 +166,30 @@ public class CsvHandler{
 
 /*lettura*/
 
-    //legge in continuazione dalla riga precedentemente letta. <- fine riga non gestito!!!
-    public String[] letturaConsecutiva() throws IOException{
-        return csvToString(reader.readLine());
+    //legge la mappa del file alla posizione richiesta
+    public String getAtMappaFile(int a, int b){
+        if (a>=numRighe) {
+            a = numRighe-1;
+        }
+
+        if (b>=numCol) {
+            b = numCol-1;
+        }
+
+        return mappaFile[a][b];
+    }
+
+    int getNumeroRighe(){
+        return numRighe;
+    }
+
+    int getNumeroColonne(){
+        return numCol;
+    }
+
+    //restituisce falso solo se il file non ha caratteri
+    boolean getVuoto(){
+        return vuoto;
     }
 
 /*scrittura*/
@@ -244,6 +265,7 @@ public class CsvHandler{
     }
 
 /*sintassi .csv */
+
     //conversione da codifica CSV a un array di stringe contenenti le informazioni delle singole colonne
     public String[] csvToString(String csvString){
         int columnNum = 0, lastComma = -1; //inizia da -1 visto che nel substring viene sommato 1, questo per fare laggere il primo elemento dalla riga 0
