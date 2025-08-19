@@ -16,11 +16,12 @@ public class CsvHandler{
     public CsvHandler(String csvPath) {
         this.soloLettura = false;
         this.csvPath = csvPath;
-        try{
-            reader = new BufferedReader(new FileReader(csvPath));
+
+        try(FileWriter writer = new FileWriter(csvPath, true)){ //"scrivo" il file cosi da crearlo in caso che non esista
+            reader = new BufferedReader(new FileReader(csvPath));//preparo il reader
             leggiFile();
 
-            if(this.numCol == 1){
+            if(this.numCol == 0){
                 System.out.println("file inizializzato");//debug
                 vuoto = true;
             }else{
@@ -196,7 +197,7 @@ public class CsvHandler{
 
     //scrittura di una riga CSV
     void nuovaRigaCSV(String riga[]){
-        if (riga.length > numCol){
+        if ((riga.length > numCol) && !vuoto){
             System.err.println("oggetto troppo lungo");//debug
         }else{
             numRighe++;
@@ -211,6 +212,20 @@ public class CsvHandler{
             System.gc();
         }
     } 
+
+    void cancellaRigaCSV(int posi){
+        numRighe--;
+        String [][] nuovaMappa = new String[numRighe][numCol];
+        for (int i = 0; i < numRighe; i++) {
+                if(posi == i){
+                    continue;
+                }
+                nuovaMappa[i] = mappaFile[i];
+            }
+            mappaFile = nuovaMappa;
+            System.gc();
+
+    }
 
     //viene letta la prima riga della mappa del file
     public String[] getFirstLine(){
