@@ -188,6 +188,15 @@ public class CsvHandler{
         return numCol;
     }
 
+    public String[] getAtMappaFile(int a){
+        if (a>=numRighe) {
+            a = numRighe-1;
+        }
+
+        return mappaFile[a];
+
+    }
+
     //restituisce falso solo se il file non ha caratteri
     boolean getVuoto(){
         return vuoto;
