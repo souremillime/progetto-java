@@ -168,16 +168,16 @@ public class CsvHandler{
 /*lettura*/
 
     //legge la mappa del file alla posizione richiesta
-    public String getAtMappaFile(int a, int b){
-        if (a>=numRighe) {
-            a = numRighe-1;
+    public String getAtMappaFile(int riga, int colonna){
+        if (riga>=numRighe) {
+            riga = numRighe-1;
         }
 
-        if (b>=numCol) {
-            b = numCol-1;
+        if (colonna>=numCol) {
+            colonna = numCol-1;
         }
 
-        return mappaFile[a][b];
+        return mappaFile[riga][colonna];
     }
 
     int getNumeroRighe(){
@@ -188,12 +188,12 @@ public class CsvHandler{
         return numCol;
     }
 
-    public String[] getAtMappaFile(int a){
-        if (a>=numRighe) {
-            a = numRighe-1;
+    public String[] getAtMappaFile(int riga){
+        if (riga>=numRighe) {
+            riga = numRighe-1;
         }
 
-        return mappaFile[a];
+        return mappaFile[riga];
 
     }
 
@@ -234,23 +234,10 @@ public class CsvHandler{
             mappaFile = nuovaMappa;
             System.gc();
 
-    }
+    }  
+    
 
-    //viene letta la prima riga della mappa del file
-    public String[] getFirstLine(){
-        //si crea un nuovo spazio in memoria, così da non interferire con la mappa del file
-        String[] primaRiga = new String[numCol];
-        //verifico che il file non sia vuoto
-        if(!this.vuoto){
-            for(int i = 0; i<numCol;i++){
-                primaRiga[i] = this.mappaFile[0][i];
-            }
-        }else{
-            primaRiga = null;
-        }
-        return primaRiga;
-    }
-
+    //riscrive una riga della mappa del file, ma non modifica direttamente il file. Serve salvare le modifiche
     void riscriviRigaCSV(String riga[], int posi){
         if (riga.length > numCol){
             System.err.println("oggetto troppo lungo");//debug
@@ -258,6 +245,18 @@ public class CsvHandler{
             System.err.println("coordinate sbagliate");//debug
         }else{
             this.mappaFile[posi] = riga;
+        
+        }
+
+    }
+
+        void riscriviElementoCSV(String elemento, int posix, int posiy){
+        if (posix > numCol){
+            System.err.println("elemento inesistente");//debug
+        }else if(posiy > numRighe){
+            System.err.println("elemento inesistente");//debug
+        }else{
+            this.mappaFile[posiy][posix] = elemento;
         
         }
 
@@ -271,14 +270,14 @@ public class CsvHandler{
             writer.close();
             
             //inizio scrittura
-            writer = new FileWriter(csvPath, true);//modalità sovrascrittura
+            writer = new FileWriter(csvPath, true);//modalità senza sovrascrittura
                 
             writer.write(stringToCSV(mappaFile[0]));//inizia senza capoverso
 
-                System.out.println("mappa 1: "+ mappaFile[0][0]);
+                System.out.println("mappa 1: "+ mappaFile[0][0]);//debug
 
             for(int i = 1; i<numRighe;i++ ){
-                System.out.println("mappa: "+ mappaFile[i][0]);
+                System.out.println("mappa: "+ mappaFile[i][0]);//debug
                 writer.write("\n" + stringToCSV(mappaFile[i]));//con capoverso
             }
             writer.close();

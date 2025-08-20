@@ -4,7 +4,6 @@ public class Categoria extends CsvHandler{
     //caratteristiche
     String nomeCategoria;
     static String cartellaStd = "Categorie"; //path relativo della cartella standard 
-    //dettagli
 
 /*costruttore*/
 
@@ -20,6 +19,10 @@ public class Categoria extends CsvHandler{
 
 /*get o lettura*/
 
+    public String getNome(){
+        return nomeCategoria;
+    }
+
     public void cercaPerNome(String nome) {
 
         System.out.println("\nCategoria: " + nomeCategoria + "\n");
@@ -34,16 +37,14 @@ public class Categoria extends CsvHandler{
         
     }
 
-    public void print(int a, int b){
-        if(b>= getNumeroRighe()){
-            b = getNumeroRighe()-1;
-        }
-        System.out.println("\n Categoria: " + this.nomeCategoria + "\n");
-        for(int i = a; i<=b; i++){
-            for(int j = 0; j<numCol; j++){
-                System.out.printf("|%10s", getAtMappaFile(i,j));
-            }
-            System.out.println("|");
+    public void getQuantita(String nome){
+        int posizioneOggetto = esisteOggetto(nome);
+
+        if(posizioneOggetto == -1){
+            System.out.println("l'oggetto non esiste");
+
+        }else{
+            int quantitaOggetto = Integer.parseInt(getAtMappaFile(posizioneOggetto, 1)); 
         }
 
     }
@@ -84,7 +85,7 @@ public class Categoria extends CsvHandler{
         
     }
 
-    //riduce la quantità di uno e scrive l'operazione nelle log
+    //riduce la quantità di un oggetto o lo cancella definitivamente 
     public void eliminaOggetto(String nome, int quantita){
         int posizioneOggetto = esisteOggetto(nome);
 
@@ -92,7 +93,7 @@ public class Categoria extends CsvHandler{
             System.out.println("l'oggetto non esiste");
 
         }else{
-            int quantitaOggetto = Integer.parseInt(getAtMappaFile(posizioneOggetto, numCol));          
+            int quantitaOggetto = Integer.parseInt(getAtMappaFile(posizioneOggetto, 1));          
             if(quantita >= quantitaOggetto){
                 cancellaRigaCSV(posizioneOggetto);
             }else{
@@ -104,6 +105,37 @@ public class Categoria extends CsvHandler{
 
         }
         
+    }
+    //riduce la quantità di un oggetto specifico
+    public void riduciQuantita(String nome, int riduci){
+        int posizioneOggetto = esisteOggetto(nome);
+
+        if(posizioneOggetto == -1){
+            System.out.println("l'oggetto non esiste");
+
+        }else{
+            int quantitaOggetto = Integer.parseInt(getAtMappaFile(posizioneOggetto, 1));
+            if(riduci <= quantitaOggetto){
+                quantitaOggetto = quantitaOggetto - riduci;
+                riscriviElementoCSV(String.valueOf(quantitaOggetto), 1, posizioneOggetto);
+            }else{
+                System.out.println("La quantità degli oggetti è inferiore");
+            }
+        }
+    }
+
+    //aumenta la quantita di un oggetto specifico
+     public void aumentaQuantita(String nome, int aumenta){
+        int posizioneOggetto = esisteOggetto(nome);
+
+        if(posizioneOggetto == -1){
+            System.out.println("l'oggetto non esiste");
+
+        }else{
+            int quantitaOggetto = Integer.parseInt(getAtMappaFile(posizioneOggetto, 1));
+                quantitaOggetto = quantitaOggetto + aumenta;
+                riscriviElementoCSV(String.valueOf(quantitaOggetto), 1, posizioneOggetto);
+        }
     }
 
 /*static*/
@@ -119,6 +151,40 @@ public class Categoria extends CsvHandler{
             
         }
         return false;
+
+    }
+
+    static String[] getListaCategorie(){
+        File cartella = new File(cartellaStd);
+        String[] lista = null;
+        int riduci = 0;
+        if(!cartella.isDirectory()){
+            lista = cartella.list();
+            for (int i = 0; i<lista.length; i++) {
+                if(!lista[i].endsWith(".csv")){
+                    lista[i] = null;
+                    riduci++;
+                }else{
+                    lista[i] = lista[i].replace(".csv", "");
+                }
+            }
+            if(riduci>0){
+                String[] riduzione = new String[lista.length - riduci];
+                int i = 0,j = 0;
+                while (i < riduzione.length) {
+                    if(lista[i] == null){
+                        continue;
+                    }else{
+                        riduzione[j] = lista[i];
+                        j++;
+                    }
+                    i++;
+                }
+                lista = riduzione;
+            }
+            
+        }
+        return lista;
 
     }
 

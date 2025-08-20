@@ -2,44 +2,84 @@ import java.util.Scanner;
 
 public class MainProgetto{
     static Utente utente;
+    static Categoria categoria;
     static Scanner sc = new Scanner(System.console().reader());
+
+    static String stato = "\nnessun utente\n";
 
 
     public static void main(String[] args){
-        Categoria bob = new Categoria("Categorie/bobTest.csv");
-        bob.print(0, 3);
-        bob.cercaPerNome("a");
-        System.out.println(Categoria.getPresenzaCategoria());
-        switch(printMenu(utente)){
-            case 0 :
+
+        System.out.println(stato);
+        switch(printMenu()){
+            case 0:
                 System.out.println("inserisci il nome dell'oggetto da cercare: ");
-                bob.cercaPerNome(sc.next());
+                String nomeRicerca = sc.next();
+                if(!(categoria instanceof Categoria)){
+                    String[] listaCategorie = Categoria.getListaCategorie();
+                    if(listaCategorie == null){
+                        System.out.println("il tuo catalogo è vuoto");
+                        break;
+                    }
+                    for(int i = 0; i<listaCategorie.length; i++){
+                        categoria = new Categoria(listaCategorie[i]);
+                        categoria.cercaPerNome(nomeRicerca);
+                    }
+                    categoria = null;
+                }else{
+                    categoria.cercaPerNome(nomeRicerca);
+                }
                 break;
             case 1:
                 logIn();
+                break;
+
+            case 2:
+                
+
             default:
                 System.out.println("l'operoazione selezionata non esiste");
 
         }
     }
 
-
-    static int printMenu(Utente utente){
-        int selezione = 1;
-        int uscita;
+    //stampa il menu e restituisce l'attività selezionata dall'utente o -1 se non esiste
+    static int printMenu(){
+        int selezione = 1;//definisce la quantita massima di opzioni
+        int uscita;//l'opzioni richiesta dall'utente
+        //menu senza utente
         System.out.println("[0] cerca un oggetto per nome");
+        //menu con utente base
         if(utente instanceof Utente){
-            selezione = 2;
             System.out.println("[1] cambia utente");
-            System.out.println("[2] prendi un oggetto");
+            //menu in presenza di una categoria selezionata
+            if(categoria instanceof Categoria){
+                selezione = 3;
+                System.out.println("[2] prendi in prestito un oggetto");
+                System.out.println("[3] restituisci un oggetto");
+            }else{
+                //menu in assenza di una categoria selezionata
+                selezione = 2;
+                System.out.println("[2] seleziona una categoria");
+            }
         }else{
             System.out.println("[1] effettua il log in");
         }
+        //menu per un utente superiore
         if(utente instanceof UtenteSuperiore){
-            selezione = 5;
-            System.out.println("[3] aggiungi una categoria");
-            System.out.println("[4] aggiungi un oggetto");
-            System.out.println("[5] crea un utente");
+            if(categoria instanceof Categoria){
+                selezione = 7;
+                System.out.println("[4] crea un oggetto");
+                System.out.println("[5] crea una categoria");
+                System.out.println("[6] crea un utente");
+                System.out.println("[7] cancella un utente");
+            }else{
+                selezione = 5;
+                System.out.println("[3] crea una categoria");
+                System.out.println("[4] crea un utente");
+                System.out.println("[5] cancella un utente");
+
+            }
         }
         System.out.print("digita il numero dell'operazione da eseguire: ");
         uscita = sc.nextInt();
