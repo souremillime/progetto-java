@@ -8,6 +8,10 @@ public class MainProgetto{
     static String stato = "\nnessun utente\n";
 
 
+    static String nomeOggetto;
+    static int quantitaOggetti;
+
+
     public static void main(String[] args){
 
         System.out.println(stato);
@@ -35,7 +39,79 @@ public class MainProgetto{
                 break;
 
             case 2:
+                selezionaCategoria();
+                break;
+            case 3:
+                if(!(categoria instanceof Categoria)){
+                    System.out.println("per prendere un oggetto devi prima selezionare una categoria. Vuoi selezionare una categoria? [S o N]");
+                    if(sc.next().toUpperCase().equals("S")){
+                        selezionaCategoria();
+                    }else{
+                        break;
+                    }
+                }
+                System.out.print("Inserisci il nome dell'oggetto: ");
+                nomeOggetto = sc.next();
+                System.out.print("Inserisci la quantita di oggetti che vuoi prendere: ");
+                quantitaOggetti = sc.nextInt();
+                utente.nuovoPrestito(categoria, nomeOggetto, quantitaOggetti);
+                break;
+
+            case 4:
+                if(!(categoria instanceof Categoria)){
+                    System.out.println("per restituire un oggetto devi prima selezionare una categoria. Vuoi selezionare una categoria? [S o N]");
+                    if(sc.next().toUpperCase().equals("S")){
+                        selezionaCategoria();
+                    }else{
+                        break;
+                    }
+                }
+                System.out.print("Inserisci il nome dell'oggetto: ");
+                nomeOggetto = sc.next();
+                utente.restituisciPrestito(categoria, nomeOggetto);
+                break;
+            case 5:
+                if(!(categoria instanceof Categoria)){
+                    System.out.println("per restituire un oggetto devi prima selezionare una categoria. Vuoi selezionare una categoria? [S o N]");
+                    if(sc.next().toUpperCase().equals("S")){
+                        selezionaCategoria();
+                    }else{
+                        break;
+                    }
+                }
+                System.out.print("Inserisci il nome dell'oggetto: ");
+                String[] nuovoOggetto = new String[3];
+                String nuovaDescrizione;
+                nuovoOggetto[0] = sc.next();
+                if(categoria.esisteOggetto(nuovoOggetto[0]) == -1){
+                    System.out.print("Inserisci la quantita dell'oggetto: ");
+                    nuovoOggetto[1] = sc.next();
                 
+                    System.out.println("Inserisci la descrizione: ");
+                    while (true) { 
+                        nuovaDescrizione = sc.nextLine();
+                        if(nuovaDescrizione.isEmpty()){
+                            break;
+                        }else{
+                            nuovoOggetto[2] += nuovaDescrizione;
+                        }
+
+                    }
+                    categoria.aggiungiOggetto(nuovoOggetto);
+                
+                }
+                break;
+
+            case 6:
+                System.out.println("Inserisci il nome della nuova categoria");
+                String nomeCategoria = sc.next();
+                if(Categoria.esisteCategoria(nomeCategoria)){
+                    System.out.println("La categoria è già esistente");
+                }else{
+                    categoria = new Categoria(nomeCategoria);
+                }
+            case 7: 
+
 
             default:
                 System.out.println("l'operoazione selezionata non esiste");
@@ -51,35 +127,22 @@ public class MainProgetto{
         System.out.println("[0] cerca un oggetto per nome");
         //menu con utente base
         if(utente instanceof Utente){
+            selezione = 4;
             System.out.println("[1] cambia utente");
-            //menu in presenza di una categoria selezionata
-            if(categoria instanceof Categoria){
-                selezione = 3;
-                System.out.println("[2] prendi in prestito un oggetto");
-                System.out.println("[3] restituisci un oggetto");
-            }else{
-                //menu in assenza di una categoria selezionata
-                selezione = 2;
-                System.out.println("[2] seleziona una categoria");
-            }
+            System.out.println("[2] seleziona una categoria");
+            System.out.println("[3] prendi in prestito un oggetto");
+            System.out.println("[4] restituisci un oggetto");
+            
         }else{
             System.out.println("[1] effettua il log in");
         }
         //menu per un utente superiore
         if(utente instanceof UtenteSuperiore){
-            if(categoria instanceof Categoria){
-                selezione = 7;
-                System.out.println("[4] crea un oggetto");
-                System.out.println("[5] crea una categoria");
-                System.out.println("[6] crea un utente");
-                System.out.println("[7] cancella un utente");
-            }else{
-                selezione = 5;
-                System.out.println("[3] crea una categoria");
-                System.out.println("[4] crea un utente");
-                System.out.println("[5] cancella un utente");
-
-            }
+                selezione = 8;
+                System.out.println("[5] crea un oggetto");
+                System.out.println("[6] crea una categoria");
+                System.out.println("[7] crea un utente");
+                System.out.println("[8] cancella un utente");
         }
         System.out.print("digita il numero dell'operazione da eseguire: ");
         uscita = sc.nextInt();
@@ -123,6 +186,27 @@ public class MainProgetto{
                 }
             }else{
                 System.out.print("Credenziali sbagliate");
+            }
+        }
+    }
+
+    static void selezionaCategoria(){
+        String[] listaCategorie = Categoria.getListaCategorie();
+        if(listaCategorie == null){
+            System.out.println("il tuo catalogo è vuoto");
+        }else{
+            while(true){
+                for (int i = 0; i<listaCategorie.length; i++) {
+                    System.out.printf("[%d] %s", i, listaCategorie[i]);
+                }
+                System.out.print("\ndigita il numero dalla categoria che vuoi selezionare: ");
+                int numeroSelezionato = sc.nextInt();
+                if(numeroSelezionato >= listaCategorie.length || numeroSelezionato < 0){
+                    System.out.println("il numero non rientra nella selezione ritenta\n");
+                }else{
+                    break;
+                }
+                categoria = new Categoria(listaCategorie[numeroSelezionato]);
             }
         }
     }

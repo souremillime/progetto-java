@@ -154,6 +154,20 @@ public class Categoria extends CsvHandler{
 
     }
 
+    static boolean esisteCategoria(String nomeCategoria){
+        File cartella = new File(cartellaStd);
+        if(!cartella.isDirectory()){
+            String[] lista = cartella.list();
+            for (String file : lista) {
+                if( file.contains(nomeCategoria))
+                    return true;
+            }
+            
+        }
+        return false;
+
+    }
+
     static String[] getListaCategorie(){
         File cartella = new File(cartellaStd);
         String[] lista = null;
