@@ -18,7 +18,7 @@ public class Utente{
 
     public void nuovoPrestito(Categoria categoria, String prestito, int quantita){
         categoria.eliminaOggetto(prestito, quantita);
-        String[] oggettoPreso = {categoria.getNome(), prestito, String.valueOf(quantita)};
+        String[] oggettoPreso = new String[]{categoria.getNome(), prestito, String.valueOf(quantita)};
         filePrestiti.nuovaRigaCSV(oggettoPreso);
         filePrestiti.salvaModifiche();
 
@@ -27,8 +27,8 @@ public class Utente{
     public void restituisciPrestito(Categoria categoria, String nome){
         
         for(int i = 0; i<filePrestiti.getNumeroRighe(); i++){
-            if(filePrestiti.getAtMappaFile(i, 0).equals(nome)){
-                categoria.aumentaQuantita(nome, Integer.parseInt(filePrestiti.getAtMappaFile(i, 1)));
+            if(filePrestiti.getAtMappaFile(i, 1).equals(nome)){
+                categoria.aumentaQuantita(nome, Integer.parseInt(filePrestiti.getAtMappaFile(i, 2)));
                 filePrestiti.cancellaRigaCSV(i);
                 filePrestiti.salvaModifiche();
                 break;

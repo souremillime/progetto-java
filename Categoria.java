@@ -52,7 +52,7 @@ public class Categoria extends CsvHandler{
     //verifica l'esistenza di un oggetto e ne restituisce la riga nella mappa, altrimenti restituisce -1
     public int esisteOggetto(String nomeOggetto){
         for (int i = 0; i<getNumeroRighe(); i++) {
-            if(getAtMappaFile(0,i).equals(nomeOggetto)){
+            if(getAtMappaFile(i,0).equals(nomeOggetto)){
                 return i;
             }
         }
@@ -74,6 +74,7 @@ public class Categoria extends CsvHandler{
 
         if(posizioneOggetto == -1){
             nuovaRigaCSV(oggetto);
+            salvaModifiche();
 
         }else{
             System.out.println("l'oggetto è stato aggiunto a un oggetto già esistente");
@@ -118,6 +119,7 @@ public class Categoria extends CsvHandler{
             if(riduci <= quantitaOggetto){
                 quantitaOggetto = quantitaOggetto - riduci;
                 riscriviElementoCSV(String.valueOf(quantitaOggetto), 1, posizioneOggetto);
+                salvaModifiche();
             }else{
                 System.out.println("La quantità degli oggetti è inferiore");
             }
@@ -142,7 +144,7 @@ public class Categoria extends CsvHandler{
 
     static boolean getPresenzaCategoria(){
         File cartella = new File(cartellaStd);
-        if(!cartella.isDirectory()){
+        if(cartella.isDirectory()){
             String[] lista = cartella.list();
             for (String file : lista) {
                 if( file.endsWith(".csv"))
@@ -156,7 +158,7 @@ public class Categoria extends CsvHandler{
 
     static boolean esisteCategoria(String nomeCategoria){
         File cartella = new File(cartellaStd);
-        if(!cartella.isDirectory()){
+        if(cartella.isDirectory()){
             String[] lista = cartella.list();
             for (String file : lista) {
                 if( file.contains(nomeCategoria))
@@ -168,13 +170,14 @@ public class Categoria extends CsvHandler{
 
     }
 
-    static String[] getListaCategorie(){
+    public static String[] getListaCategorie(){
         File cartella = new File(cartellaStd);
         String[] lista = null;
         int riduci = 0;
-        if(!cartella.isDirectory()){
+        if(cartella.isDirectory()){
             lista = cartella.list();
             for (int i = 0; i<lista.length; i++) {
+                System.out.println(lista[i]);
                 if(!lista[i].endsWith(".csv")){
                     lista[i] = null;
                     riduci++;

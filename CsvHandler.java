@@ -271,14 +271,17 @@ public class CsvHandler{
             
             //inizio scrittura
             writer = new FileWriter(csvPath, true);//modalità senza sovrascrittura
-                
-            writer.write(stringToCSV(mappaFile[0]));//inizia senza capoverso
+            if(numRighe > 0){
+                writer.write(stringToCSV(mappaFile[0]));//inizia senza capoverso
 
                 System.out.println("mappa 1: "+ mappaFile[0][0]);//debug
 
-            for(int i = 1; i<numRighe;i++ ){
-                System.out.println("mappa: "+ mappaFile[i][0]);//debug
-                writer.write("\n" + stringToCSV(mappaFile[i]));//con capoverso
+                for(int i = 1; i<numRighe;i++ ){
+                    if(mappaFile[i] == null){
+                        System.out.println("mappa: "+ mappaFile[i][0]);//debug
+                        writer.write("\n" + stringToCSV(mappaFile[i]));//con capoverso
+                    }
+                }
             }
             writer.close();
 
