@@ -73,6 +73,7 @@ public class Categoria extends CsvHandler{
         int posizioneOggetto = esisteOggetto(oggetto[0]);
 
         if(posizioneOggetto == -1){
+            System.out.println("scritto");//debug
             nuovaRigaCSV(oggetto);
             salvaModifiche();
 
@@ -81,7 +82,7 @@ public class Categoria extends CsvHandler{
             String[] nuovoOggetto = getAtMappaFile(posizioneOggetto);
             nuovoOggetto[1] = String.valueOf(Integer.parseInt(nuovoOggetto[1]) + Integer.parseInt(oggetto[1]));
             riscriviRigaCSV(nuovoOggetto, posizioneOggetto);
-
+            salvaModifiche();
         }
         
     }
@@ -102,6 +103,7 @@ public class Categoria extends CsvHandler{
                 String[] nuovoOggetto = getAtMappaFile(posizioneOggetto);
                 nuovoOggetto[1] = String.valueOf(Integer.parseInt(nuovoOggetto[1]) - quantita);
                 riscriviRigaCSV(nuovoOggetto, posizioneOggetto);
+                salvaModifiche();
             }
 
         }

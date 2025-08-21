@@ -12,6 +12,11 @@ public class Utente{
     public String getUsername(){
         return username;
     }
+
+    @Override
+    public String toString(){
+        return "utente standard " + username;
+    }
     
 
 /*gestione prestiti*/
@@ -40,26 +45,18 @@ public class Utente{
 
 /*gestione utenti "dinamic"*/
 
-    void cancelaUtente(){
-
-    }
-
-    void creaUtente(){
-
-    }
-
 
 /*gestione utenti "static"*/
-    static boolean esisteUtente(String username){
+    static int esisteUtente(String username){
         System.out.println(fileStd.getVuoto());
         if(!fileStd.getVuoto()){
             for (int i = 0; i<= fileStd.getNumeroRighe(); i++) {
                 if(fileStd.getAtMappaFile(i, 0).equals(username)){
-                    return true;
+                    return i;
                 }
             }
         }
-        return false;
+        return -1;
     }
 
     static String[] getCredenziali(String username){
@@ -74,14 +71,13 @@ public class Utente{
         return null;
     }
 
-    static boolean creaUtente(String username, String password){
+    static void creaUtente(String username, String password){
         String[] nuovoUtente = new String[3];
         nuovoUtente[0] = username;
         nuovoUtente[1] = Integer.toString(password.hashCode());
         nuovoUtente[2] = "std";
         fileStd.nuovaRigaCSV(nuovoUtente);
         fileStd.salvaModifiche();
-        return esisteUtente(username);
     }
 
     static boolean zeroUtenti(){

@@ -6,10 +6,10 @@ public class MainProgetto{
     static Categoria categoria;
     static Scanner sc = new Scanner(System.console().reader());
 
-    static String stato = "\nnessun utente\n";
+    static String stato = "\nnessun utente";
 
 
-    static String nomeOggetto;
+    static String nomeOggetto, nomeUtente, password;
     static int quantitaOggetti;
 
 
@@ -97,18 +97,21 @@ public class MainProgetto{
                         System.out.println("Inserisci la descrizione (per concludere scrivi *END*): ");
                         while (true) { 
                             nuovaDescrizione += sc.nextLine() + "\n";
-                            if(nuovaDescrizione.endsWith("*END*")){
+                            if(nuovaDescrizione.endsWith("*END*\n")){
 
-                                nuovoOggetto[2] = nuovaDescrizione.replace("*END*", "");
+                                nuovoOggetto[2] = nuovaDescrizione.replace("*END*\n", "");
                                 break;
                             }
 
                         }
                         categoria.aggiungiOggetto(nuovoOggetto);
                     
+                    }else{
+                        System.out.print("l'oggetto è già presente in questa categoria");
+
                     }
                     break;
-
+                //crea categoria
                 case 6:
                     System.out.println("Inserisci il nome della nuova categoria");
                     String nomeCategoria = sc.next();
@@ -117,13 +120,32 @@ public class MainProgetto{
                     }else{
                         categoria = new Categoria(nomeCategoria);
                     }
+                //crea nuovo utente
                 case 7: 
+                    System.out.print("Inserisci il nome utente: ");
+                    nomeUtente = sc.next();
+                    System.out.print("Inserisci la password: ");
+                    password = sc.next();
+                    UtenteSuperiore.creaUtente(nomeUtente, password);
+                    break;
+                //cancella utente
                 case 8:
+                    System.out.print("Inserisci il nome utente da cancellare: ");
+                    nomeUtente = sc.next();
+                    System.out.println("Inserisci la tua password per confermare l'operazione: ");
+                    password = sc.next();
+                    if(password.hashCode() == Integer.parseInt(Utente.getCredenziali(nomeUtente)[1])){
+                        UtenteSuperiore.cancellaUtente(nomeUtente);
+                    }else{
+                        System.out.println("password errata");
+                    }
+                    break;
                 
                 //esci dal programma
                 case -1:
                     System.out.println("Esco dal programma...");
                     System.exit(0);
+                    break;
 
                 default:
                     System.out.println("l'operoazione selezionata non esiste");
@@ -177,7 +199,7 @@ public class MainProgetto{
         String password;
 
         if(Utente.zeroUtenti()){
-            System.out.println("non esistono utenti voui crearne un nuovo utente superiore?[S]o[N]");
+            System.out.println("non esistono utenti voui crearne un nuovo utente superiore?[S o N]");
             if(sc.next().toUpperCase().equals("S")){
                 System.out.println("Inserisci nome utente: ");
                 username = sc.next();
@@ -185,11 +207,12 @@ public class MainProgetto{
                 password = sc.next();
 
                 UtenteSuperiore.creaUtente(username, password);
+
             }
         }else{
             System.out.print("Inserisci nome utente: ");
             username = sc.next();
-            if(Utente.esisteUtente(username)){
+            if(Utente.esisteUtente(username) > -1){
 
                 System.out.print("Inserisci password: ");
                 password = sc.next();
@@ -198,8 +221,10 @@ public class MainProgetto{
                     if(credenziali[1].equals("std")){
                         utente = new Utente(username);
                         System.out.println("Accesso eseguito con successo come utente base " + username);  
+                        stato = utente.toString();
                     }else if(credenziali[1].equals("sup")){
                         utente = new UtenteSuperiore(username);
+                        stato = utente.toString();
                         System.out.println("Accesso eseguito con successo come utente superiore " + username);  
                     }else{
                         System.out.println("Credenziali sbagliate");
@@ -235,6 +260,7 @@ public class MainProgetto{
             }
 
             categoria = new Categoria(listaCategorie[numeroSelezionato]);
+            stato += " : " + categoria.getNome();
         }
     }
 }

@@ -218,6 +218,7 @@ public class CsvHandler{
 
             nuovaMappa[numRighe-1] = riga;
             mappaFile = nuovaMappa;
+            System.out.println(mappaFile[numRighe-1][0]);
             System.gc();
         }
     } 
@@ -277,7 +278,7 @@ public class CsvHandler{
                 System.out.println("mappa 1: "+ mappaFile[0][0]);//debug
 
                 for(int i = 1; i<numRighe;i++ ){
-                    if(mappaFile[i] == null){
+                    if(!(mappaFile[i] == null)){
                         System.out.println("mappa: "+ mappaFile[i][0]);//debug
                         writer.write("\n" + stringToCSV(mappaFile[i]));//con capoverso
                     }
