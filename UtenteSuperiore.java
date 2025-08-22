@@ -7,7 +7,7 @@ public class UtenteSuperiore extends Utente{
     }
 
     @Override
-    public String toString(){
+    public String stampaStato(){
         return "utente superiore " + username;
     }
 

@@ -139,6 +139,7 @@ public class Categoria extends CsvHandler{
             int quantitaOggetto = Integer.parseInt(getAtMappaFile(posizioneOggetto, 1));
                 quantitaOggetto = quantitaOggetto + aumenta;
                 riscriviElementoCSV(String.valueOf(quantitaOggetto), 1, posizioneOggetto);
+                salvaModifiche();
         }
     }
 

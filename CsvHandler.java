@@ -169,14 +169,7 @@ public class CsvHandler{
 
     //legge la mappa del file alla posizione richiesta
     public String getAtMappaFile(int riga, int colonna){
-        if (riga>=numRighe) {
-            riga = numRighe-1;
-        }
-
-        if (colonna>=numCol) {
-            colonna = numCol-1;
-        }
-
+    
         return mappaFile[riga][colonna];
     }
 

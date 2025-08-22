@@ -13,9 +13,9 @@ public class Utente{
         return username;
     }
 
-    @Override
-    public String toString(){
-        return "utente standard " + username;
+    
+    public String stampaStato(){
+        return "utente base " + username;
     }
     
 
@@ -28,7 +28,7 @@ public class Utente{
         filePrestiti.salvaModifiche();
 
     }
-
+    
     public void restituisciPrestito(Categoria categoria, String nome){
         
         for(int i = 0; i<filePrestiti.getNumeroRighe(); i++){
@@ -58,7 +58,7 @@ public class Utente{
         }
         return -1;
     }
-
+    //restituisce la password ed il grado 
     static String[] getCredenziali(String username){
         if(!fileStd.getVuoto()){
             for (int i = 0; i<= fileStd.getNumeroRighe(); i++) {
