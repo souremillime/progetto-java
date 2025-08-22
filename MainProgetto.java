@@ -9,32 +9,13 @@ public class MainProgetto{
     static String stato = "\nnessun utente\n";
 
 
-    static String nomeOggetto, nomeUtente, password, grado;
-    static int quantitaOggetti;
-
-
     public static void main(String[] args){
         while(true){
             System.out.println(stato);
             switch(printMenu()){
                 //cerca un oggetto per nome
                 case 0:
-                    System.out.println("inserisci il nome dell'oggetto da cercare: ");
-                    String nomeRicerca = sc.next();
-                    if(!(categoria instanceof Categoria)){
-                        String[] listaCategorie = Categoria.getListaCategorie();
-                        if(listaCategorie == null){
-                            System.out.println("il tuo catalogo è vuoto");
-                            break;
-                        }
-                        for(int i = 0; i<listaCategorie.length; i++){
-                            categoria = new Categoria(listaCategorie[i]);
-                            categoria.cercaPerNome(nomeRicerca);
-                        }
-                        categoria = null;
-                    }else{
-                        categoria.cercaPerNome(nomeRicerca);
-                    }
+                    cercaPerNome();
                     break;
                 //cambia utente o esegui il login
                 case 1:
@@ -47,111 +28,37 @@ public class MainProgetto{
                     break;
                 //prend in prestito un oggetto
                 case 3:
-                    if(!(categoria instanceof Categoria)){
-                        System.out.println("per prendere un oggetto devi prima selezionare una categoria. Vuoi selezionare una categoria? [S o N]");
-                        if(sc.next().toUpperCase().equals("S")){
-                            selezionaCategoria();
-                        }else{
-                            break;
-                        }
-                    }
-                    System.out.print("Inserisci il nome dell'oggetto: ");
-                    nomeOggetto = sc.next();
-                    System.out.print("Inserisci la quantita di oggetti che vuoi prendere: ");
-                    quantitaOggetti = sc.nextInt();
-                    utente.nuovoPrestito(categoria, nomeOggetto, quantitaOggetti);
+                    prestitoOggetto();
                     break;
                 //restituisci un oggetto
                 case 4:
-                    if(!(categoria instanceof Categoria)){
-                        System.out.println("per restituire un oggetto devi prima selezionare una categoria. Vuoi selezionare una categoria? [S o N]");
-                        if(sc.next().toUpperCase().equals("S")){
-                            selezionaCategoria();
-                        }else{
-                            break;
-                        }
-                    }
-                    System.out.print("Inserisci il nome dell'oggetto: ");
-                    nomeOggetto = sc.next();
-                    utente.restituisciPrestito(categoria, nomeOggetto);
+                    restituisciOggetto();
                     break;
                 //crea un oggetto
                 case 5:
-                    if(!(categoria instanceof Categoria)){
-                        System.out.println("Per creare un oggetto devi prima selezionare la categoria in cui vuoi crearlo. Vuoi selezionare una categoria? [S o N]");
-                        if(sc.next().toUpperCase().equals("S")){
-                            selezionaCategoria();
-                        }else{
-                            break;
-                        }
-                    }
-                    String[] nuovoOggetto = new String[3];
-                    String nuovaDescrizione = "";
-
-                    System.out.print("Inserisci il nome dell'oggetto: ");
-                    nuovoOggetto[0] = sc.next();
-                    if(categoria.esisteOggetto(nuovoOggetto[0]) == -1){
-                        System.out.print("Inserisci la quantita dell'oggetto: ");
-                        nuovoOggetto[1] = sc.next();
-                    
-                        System.out.println("Inserisci la descrizione (per concludere scrivi *END*): ");
-                        while (true) { 
-                            nuovaDescrizione += sc.nextLine() + "\n";
-                            if(nuovaDescrizione.endsWith("*END*\n")){
-
-                                nuovoOggetto[2] = nuovaDescrizione.replace("*END*\n", "");
-                                break;
-                            }
-
-                        }
-                        categoria.aggiungiOggetto(nuovoOggetto);
-                    
-                    }else{
-                        System.out.print("l'oggetto è già presente in questa categoria");
-
-                    }
+                    creaOggetto();
                     break;
-                //crea categoria
+                //elimina oggetto
                 case 6:
-                    System.out.println("Inserisci il nome della nuova categoria");
-                    String nomeCategoria = sc.next();
-                    if(Categoria.esisteCategoria(nomeCategoria)){
-                        System.out.println("La categoria è già esistente");
-                    }else{
-                        categoria = new Categoria(nomeCategoria);
-                    }
+                    eliminaOggetto();
                     break;
+
+                //crea categoria
+                case 7:
+                    
+                    break;
+
+                case 8:
+                    eliminaCategoria();
+                    break;
+
                 //crea nuovo utente
-                case 7: 
-                    System.out.print("Inserisci il nome utente: ");
-                    nomeUtente = sc.next();
-                    System.out.print("Inserisci la password: ");
-                    password = sc.next();
-                    while(true){
-                        System.out.println("Vuoi creare un utente superiore [sup] o un utente base [std]: ");
-                        grado = sc.next();
-                        if(grado.toUpperCase().equals("SUP")){
-                            UtenteSuperiore.creaUtente(nomeUtente, password);
-                            break;
-                        }else if(grado.toUpperCase().equals("STD")){
-                            Utente.creaUtente(nomeUtente, password);
-                            break;
-                        }else{
-                            System.out.println("Grado non riconosciuto, ritenta.");
-                        }
-                    }
+                case 9: 
+                    creaUtente();
                     break;
                 //cancella utente
-                case 8:
-                    System.out.print("Inserisci il nome utente da cancellare: ");
-                    nomeUtente = sc.next();
-                    System.out.println("Inserisci la tua password per confermare l'operazione: ");
-                    password = sc.next();
-                    if(password.hashCode() == Integer.parseInt(Utente.getCredenziali(nomeUtente)[0])){
-                        UtenteSuperiore.cancellaUtente(nomeUtente);
-                    }else{
-                        System.out.println("password errata");
-                    }
+                case 10:
+                    eliminaUtente();
                     break;
                 
                 //esci dal programma
@@ -188,11 +95,13 @@ public class MainProgetto{
         }
         //menu per un utente superiore
         if(utente instanceof UtenteSuperiore){
-                selezione = 8;
+                selezione = 10;
                 System.out.println("[5] crea un oggetto");
-                System.out.println("[6] crea una categoria");
-                System.out.println("[7] crea un utente");
-                System.out.println("[8] cancella un utente");
+                System.out.println("[6] elimina un oggetto");
+                System.out.println("[7] crea una categoria");
+                System.out.println("[8] elimina una categoria");
+                System.out.println("[9] crea un utente");
+                System.out.println("[10] cancella un utente");
         }
         System.out.print("digita il numero dell'operazione da eseguire: ");
         try{
@@ -278,4 +187,173 @@ public class MainProgetto{
             stato = stato.replace("\n", "") + " : " + categoria.getNome() + "\n";
         }
     }
+
+    public static void cercaPerNome(){
+        System.out.println("inserisci il nome dell'oggetto da cercare: ");
+        String nomeRicerca = sc.next();
+        if(!(categoria instanceof Categoria)){
+            String[] listaCategorie = Categoria.getListaCategorie();
+            if(listaCategorie == null){
+                System.out.println("il tuo catalogo è vuoto");
+            }else{
+                for(int i = 0; i<listaCategorie.length; i++){
+                    categoria = new Categoria(listaCategorie[i]);
+                    categoria.cercaPerNome(nomeRicerca);
+                }
+                categoria = null;
+            }
+        }else{
+            categoria.cercaPerNome(nomeRicerca);
+        }
+    }
+
+    public static void prestitoOggetto(){
+        String nomeOggetto;
+        int quantitaOggetti;
+        if(!(categoria instanceof Categoria)){
+            System.out.println("per prendere un oggetto devi prima selezionare una categoria. Vuoi selezionare una categoria? [S o N]");
+            if(sc.next().toUpperCase().equals("S")){
+                selezionaCategoria();
+            }
+        }
+        if(categoria instanceof Categoria){
+            System.out.print("Inserisci il nome dell'oggetto: ");
+            nomeOggetto = sc.next();
+            System.out.print("Inserisci la quantita di oggetti che vuoi prendere: ");
+            quantitaOggetti = sc.nextInt();
+            utente.nuovoPrestito(categoria, nomeOggetto, quantitaOggetti);
+        }
+    }
+
+
+    public static void restituisciOggetto(){
+        String nomeOggetto;
+        if(!(categoria instanceof Categoria)){
+            System.out.println("per restituire un oggetto devi prima selezionare una categoria. Vuoi selezionare una categoria? [S o N]");
+            if(sc.next().toUpperCase().equals("S")){
+                selezionaCategoria();
+            }
+        }
+        if(categoria instanceof Categoria){
+            System.out.print("Inserisci il nome dell'oggetto: ");
+            nomeOggetto = sc.next();
+            utente.restituisciPrestito(categoria, nomeOggetto);
+        }
+    }
+
+    public static void creaOggetto(){
+        String nomeOggetto;
+        if(!(categoria instanceof Categoria)){
+            System.out.println("Per creare un oggetto devi prima selezionare la categoria in cui vuoi crearlo. Vuoi selezionare una categoria? [S o N]");
+            if(sc.next().toUpperCase().equals("S")){
+                selezionaCategoria();
+            }
+        }
+        if(categoria instanceof Categoria){
+            String[] nuovoOggetto = new String[3];
+            String nuovaDescrizione = "";
+
+            System.out.print("Inserisci il nome dell'oggetto: ");
+            nuovoOggetto[0] = sc.next();
+            if(categoria.esisteOggetto(nuovoOggetto[0]) == -1){
+                System.out.print("Inserisci la quantita dell'oggetto: ");
+                nuovoOggetto[1] = sc.next();
+            
+                System.out.println("Inserisci la descrizione (per concludere scrivi *END*): ");
+                while (true) { 
+                    nuovaDescrizione += sc.nextLine() + "\n";
+                    if(nuovaDescrizione.endsWith("*END*\n")){
+
+                        nuovoOggetto[2] = nuovaDescrizione.replace("*END*\n", "");
+                        break;
+                    }
+
+                }
+                categoria.aggiungiOggetto(nuovoOggetto);
+            
+            }else{
+                System.out.print("l'oggetto è già presente in questa categoria");
+
+            }
+        }
+    }
+
+    public static void eliminaOggetto(){
+        String nomeOggetto;
+        int quantita;
+        if(!(categoria instanceof Categoria)){
+            System.out.println("Per creare un oggetto devi prima selezionare la categoria in cui vuoi crearlo. Vuoi selezionare una categoria? [S o N]");
+            if(sc.next().toUpperCase().equals("S")){
+                selezionaCategoria();
+            }
+        }
+        if(categoria instanceof Categoria){
+            System.out.print("Inserisci il nome dell'oggetto: ");
+            nomeOggetto = sc.next();
+            System.out.print("Inserisci la quantita di oggetti da eliminare (per cancellarlo completamente " + categoria.getQuantita(nomeOggetto) +"): ");
+            quantita = sc.nextInt();
+
+            categoria.eliminaOggetto(nomeOggetto, quantita);
+        }
+    }
+
+    public static void creaCategoria(){
+        System.out.println("Inserisci il nome della nuova categoria");
+        String nomeCategoria = sc.next();
+        if(Categoria.esisteCategoria(nomeCategoria)){
+            System.out.println("La categoria è già esistente");
+        }else{
+            categoria = new Categoria(nomeCategoria);
+        }
+    }
+
+    public static void eliminaCategoria(){
+        String nomeCategoria;
+
+        if(categoria instanceof Categoria){
+            categoria = null;
+        }
+
+        System.out.print("Inserisci il nome dell'oggetto: ");
+        nomeCategoria = sc.next();
+        Categoria.eliminaCategoria(nomeCategoria);
+        
+    }
+
+    public static void creaUtente(){
+        String nomeUtente, password, grado;
+        
+        System.out.print("Inserisci il nome utente: ");
+        nomeUtente = sc.next();
+        System.out.print("Inserisci la password: ");
+        password = sc.next();
+        while(true){
+            System.out.println("Vuoi creare un utente superiore [sup] o un utente base [std]: ");
+            grado = sc.next();
+            if(grado.toUpperCase().equals("SUP")){
+                UtenteSuperiore.creaUtente(nomeUtente, password);
+                break;
+            }else if(grado.toUpperCase().equals("STD")){
+                Utente.creaUtente(nomeUtente, password);
+                break;
+            }else{
+                System.out.println("Grado non riconosciuto, ritenta.");
+            }
+        }
+    }
+
+    public static void eliminaUtente(){
+        String nomeUtente, password;
+        System.out.print("Inserisci il nome utente da cancellare: ");
+        nomeUtente = sc.next();
+        System.out.println("Inserisci la tua password per confermare l'operazione: ");
+        password = sc.next();
+        if(password.hashCode() == Integer.parseInt(Utente.getCredenziali(nomeUtente)[0])){
+            UtenteSuperiore.cancellaUtente(nomeUtente);
+        }else{
+            System.out.println("password errata");
+        }
+    }
+
+
 }

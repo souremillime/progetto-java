@@ -1,6 +1,6 @@
 import java.io.File;
 
-public class Categoria extends CsvHandler{
+public class Categoria extends GestoreCSV{
     //caratteristiche
     String nomeCategoria;
     static String cartellaStd = "Categorie"; //path relativo della cartella standard 
@@ -24,29 +24,35 @@ public class Categoria extends CsvHandler{
     }
 
     public void cercaPerNome(String nome) {
+        String sottoStringa = "";
 
         System.out.println("\nCategoria: " + nomeCategoria + "\n");
-        
 
-        for (int i = 0; i<numRighe; i++) {
-            if(mappaFile[i][0].contains(nome)){
-                System.out.println("\t" + mappaFile[i][0]);
+        if(esisteOggetto(nome)<0){
+            System.out.println("nessun oggetto trovato");
+        }else{
+            for (int i = 0; i<getNumeroRighe(); i++) {
+            /*if(getAtMappaFile(i,0).contains(nome)){
+                sottoStringa = getAtMappaFile(i,2);
+                if(sottoStringa.length>19){
+                    sottoStringa = sottoStringa.substring(0, sottoStringa.) 
+                }*/
+                System.out.printf("\t|  %s  |  %s  |  %.20s  |\n", getAtMappaFile(i,0), getAtMappaFile(i,1), getAtMappaFile(i,2));
             }
         }
-
-        
     }
 
-    public void getQuantita(String nome){
+    public int getQuantita(String nome){
         int posizioneOggetto = esisteOggetto(nome);
 
         if(posizioneOggetto == -1){
             System.out.println("l'oggetto non esiste");
+            return -1;
 
-        }else{
-            int quantitaOggetto = Integer.parseInt(getAtMappaFile(posizioneOggetto, 1)); 
         }
 
+        return Integer.parseInt(getAtMappaFile(posizioneOggetto, 1)); 
+       
     }
 
     //verifica l'esistenza di un oggetto e ne restituisce la riga nella mappa, altrimenti restituisce -1
@@ -206,6 +212,13 @@ public class Categoria extends CsvHandler{
         }
         return lista;
 
+    }
+
+    public static void eliminaCategoria(String nomeCategoria){
+        File eliminaFile = new File(cartellaStd + nomeCategoria + ".csv");
+        if(eliminaFile.isFile()){
+            eliminaFile.delete();
+        }
     }
 
 }

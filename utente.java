@@ -1,12 +1,12 @@
 
 public class Utente{
     protected String username;
-    protected static final CsvHandler fileStd = new CsvHandler("users.txt");
-    protected final CsvHandler filePrestiti;
+    protected static final GestoreCSV fileStd = new GestoreCSV("users.txt");
+    protected final GestoreCSV filePrestiti;
 
     public Utente(String username){
         this.username = username;
-        filePrestiti = new CsvHandler(username+".csv");
+        filePrestiti = new GestoreCSV(username+".csv");
     }
 /*get*/
     public String getUsername(){
@@ -50,7 +50,7 @@ public class Utente{
     static int esisteUtente(String username){
         System.out.println(fileStd.getVuoto());
         if(!fileStd.getVuoto()){
-            for (int i = 0; i<= fileStd.getNumeroRighe(); i++) {
+            for (int i = 0; i<fileStd.getNumeroRighe(); i++) {
                 if(fileStd.getAtMappaFile(i, 0).equals(username)){
                     return i;
                 }
@@ -61,7 +61,7 @@ public class Utente{
     //restituisce la password ed il grado 
     static String[] getCredenziali(String username){
         if(!fileStd.getVuoto()){
-            for (int i = 0; i<= fileStd.getNumeroRighe(); i++) {
+            for (int i = 0; i< fileStd.getNumeroRighe(); i++) {
                 if(fileStd.getAtMappaFile(i, 0).equals(username)){
                     String[] outString = {fileStd.getAtMappaFile(i, 1),fileStd.getAtMappaFile(i, 2)};
                     return outString;
