@@ -1,47 +1,56 @@
 import java.io.File;
 
 public class Categoria extends GestoreCSV{
-    //caratteristiche
     String nomeCategoria;
     static String cartellaStd = "Categorie"; //path relativo della cartella standard 
 
 /*costruttore*/
 
     public Categoria(String pathCategoria) {
-        super(cartellaStd + "/" + pathCategoria + ".csv");
+        super(cartellaStd + "/" + pathCategoria + ".csv"); //gestione del file csv
         File cartella = new File(cartellaStd);
+        //creo l cartella standard se non presente
         if(!cartella.isDirectory()){
-            cartella.mkdir(); //restituisce un valore booleano!!!
+            if(cartella.mkdir()){
+                System.out.println("attenzione, la creazione della cartella contenente le ctegorie non è avvenuta con successo");
+            } 
         }
-        this.nomeCategoria = new File(pathCategoria).getName().replace(".csv", "");
+        //inizializo il nome della categoria con il nome del file 
+        nomeCategoria = new File(pathCategoria).getName().replace(".csv", "");
 
     }
 
 /*get o lettura*/
-
+    //restituisce il nome della categoria
     public String getNome(){
         return nomeCategoria;
     }
-
+    //stampa gli oggetti che contengono la stringa nome
     public void cercaPerNome(String nome) {
-        String sottoStringa = "";
-
+        String sottoStringa;
+        //stampa il nome della categoria
         System.out.println("\nCategoria: " + nomeCategoria + "\n");
-
+        //verifica l'esistenza di almeno un oggetto
         if(esisteOggetto(nome)<0){
             System.out.println("nessun oggetto trovato");
         }else{
+            System.out.println("nome, quantita, descrizione");
             for (int i = 0; i<getNumeroRighe(); i++) {
-            /*if(getAtMappaFile(i,0).contains(nome)){
-                sottoStringa = getAtMappaFile(i,2);
-                if(sottoStringa.length>19){
-                    sottoStringa = sottoStringa.substring(0, sottoStringa.) 
-                }*/
-                System.out.printf("\t|  %s  |  %s  |  %.20s  |\n", getAtMappaFile(i,0), getAtMappaFile(i,1), getAtMappaFile(i,2));
+                if(getAtMappaFile(i,0).contains(nome)){
+                    sottoStringa = getAtMappaFile(i,2);
+                    //taglio la stringa se troppo lunga e aggiungo ...
+                    if(sottoStringa.length()>19){
+                        sottoStringa = sottoStringa.substring(0, 20);
+                        if(getAtMappaFile(i, 2).length() >20){
+                            sottoStringa += "...";
+                        } 
+                    }
+                    System.out.printf("\t|  %s  |  %s  |  %s  |\n", getAtMappaFile(i,0), getAtMappaFile(i,1), sottoStringa);
+                }
             }
         }
     }
-
+    //restituisce la quantita di un oggetto specifio
     public int getQuantita(String nome){
         int posizioneOggetto = esisteOggetto(nome);
 
@@ -69,25 +78,21 @@ public class Categoria extends GestoreCSV{
 
 /*set*/
 
-    // il nome della categoria viene definito
-    public void setNomeCategoria(String nomeCategoria){
-        this.nomeCategoria = nomeCategoria;
-    }
-
     //aggiunge un oggetto alla categoria o se già presente ne incrementa la quantità
     public void aggiungiOggetto(String[] oggetto){
+        //verifico l'esistenza dell'oggetto
         int posizioneOggetto = esisteOggetto(oggetto[0]);
-
+        //se non esiste creo un nuovo oggetto
         if(posizioneOggetto == -1){
-            System.out.println("scritto");//debug
-            nuovaRigaCSV(oggetto);
+            nuovaRigaCSV(oggetto);//creo una nuova riga nel file
             salvaModifiche();
 
         }else{
+            //se esiste aumento la quantita dell'oggetto
             System.out.println("l'oggetto è stato aggiunto a un oggetto già esistente");
             String[] nuovoOggetto = getAtMappaFile(posizioneOggetto);
-            nuovoOggetto[1] = String.valueOf(Integer.parseInt(nuovoOggetto[1]) + Integer.parseInt(oggetto[1]));
-            riscriviRigaCSV(nuovoOggetto, posizioneOggetto);
+            nuovoOggetto[1] = String.valueOf(Integer.parseInt(nuovoOggetto[1]) + Integer.parseInt(oggetto[1]));// incremento la quantità
+            riscriviRigaCSV(nuovoOggetto, posizioneOggetto);//riscrivo la riga
             salvaModifiche();
         }
         
@@ -95,17 +100,21 @@ public class Categoria extends GestoreCSV{
 
     //riduce la quantità di un oggetto o lo cancella definitivamente 
     public void eliminaOggetto(String nome, int quantita){
+        //verifico la sua esistenza
         int posizioneOggetto = esisteOggetto(nome);
 
         if(posizioneOggetto == -1){
             System.out.println("l'oggetto non esiste");
 
         }else{
-            int quantitaOggetto = Integer.parseInt(getAtMappaFile(posizioneOggetto, 1));          
+            //leggo la sua quantità
+            int quantitaOggetto = Integer.parseInt(getAtMappaFile(posizioneOggetto, 1)); 
+            //se la quantita richiesta è maggiore di quella dell'oggetto viene cancellato
             if(quantita >= quantitaOggetto){
                 cancellaRigaCSV(posizioneOggetto);
+                salvaModifiche();
             }else{
-
+                //altrimenti la sua quantità viene ridotta
                 String[] nuovoOggetto = getAtMappaFile(posizioneOggetto);
                 nuovoOggetto[1] = String.valueOf(Integer.parseInt(nuovoOggetto[1]) - quantita);
                 riscriviRigaCSV(nuovoOggetto, posizioneOggetto);
@@ -117,6 +126,7 @@ public class Categoria extends GestoreCSV{
     }
     //riduce la quantità di un oggetto specifico
     public void riduciQuantita(String nome, int riduci){
+        //verifico la sua esistenza
         int posizioneOggetto = esisteOggetto(nome);
 
         if(posizioneOggetto == -1){

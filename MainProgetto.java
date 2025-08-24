@@ -6,7 +6,7 @@ public class MainProgetto{
     static Categoria categoria;
     static Scanner sc = new Scanner(System.console().reader());
 
-    static String stato = "\nnessun utente\n";
+    static String stato = "\nnessun utente : nessuna categoria\n";
 
 
     public static void main(String[] args){
@@ -45,9 +45,9 @@ public class MainProgetto{
 
                 //crea categoria
                 case 7:
-                    
+                    creaCategoria();
                     break;
-
+                //elimina categoria
                 case 8:
                     eliminaCategoria();
                     break;
@@ -167,13 +167,14 @@ public class MainProgetto{
             System.out.println("il tuo catalogo è vuoto");
         }else{
             while(true){
+                System.out.println("[-1] nessuna categoria");
                 for (int i = 0; i<listaCategorie.length; i++) {
                     System.out.printf("[%d] %s\n", i, listaCategorie[i]);
                 }
                 System.out.print("\ndigita il numero dalla categoria che vuoi selezionare: ");
                 try{
                     numeroSelezionato = sc.nextInt();
-                    if(numeroSelezionato >= listaCategorie.length || numeroSelezionato < 0){
+                    if(numeroSelezionato >= listaCategorie.length || numeroSelezionato < -1){
                         System.out.println("il numero non rientra nella selezione ritenta\n");
                     }else{
                         break;
@@ -182,9 +183,13 @@ public class MainProgetto{
                     System.out.println("Input non valido");
                 }
             }
-
-            categoria = new Categoria(listaCategorie[numeroSelezionato]);
-            stato = stato.replace("\n", "") + " : " + categoria.getNome() + "\n";
+            if(numeroSelezionato == -1){
+                categoria = null;
+                stato = 
+            }else{
+                categoria = new Categoria(listaCategorie[numeroSelezionato]);
+                stato = stato.replace("\n", "") + " : " + categoria.getNome() + "\n";
+            }
         }
     }
 

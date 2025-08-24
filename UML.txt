@@ -1,0 +1,99 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class GestoreCSV {
+    - csvPath : String
+    - numCol : int
+    - numRighe : int
+    - mappaFile : String[][]
+    - reader : BufferedReader
+    - vuoto : boolean
+
+    + GestoreCSV(String csvPath)
+    - definisciDimensioni() : void
+    - leggiFile() : void
+    + getAtMappaFile(int riga, int colonna) : String
+    + getAtMappaFile(int riga) : String[]
+    + getNumeroRighe() : int
+    + getNumeroColonne() : int
+    + getVuoto() : boolean
+    + nuovaRigaCSV(String[] riga) : void
+    + cancellaRigaCSV(int posi) : void
+    + riscriviRigaCSV(String[] riga, int posi) : void
+    + riscriviElementoCSV(String elemento, int posix, int posiy) : void
+    + salvaModifiche() : void
+    - csvToString(String csvString) : String[]
+    - stringToCSV(String[] inString) : String
+}
+
+class Categoria {
+    - nomeCategoria : String
+    - cartellaStd : String
+
+    + Categoria(String pathCategoria)
+    + getNome() : String
+    + cercaPerNome(String nome) : void
+    + getQuantita(String nome) : int
+    + esisteOggetto(String nomeOggetto) : int
+    + aggiungiOggetto(String[] oggetto) : void
+    + eliminaOggetto(String nome, int quantita) : void
+    + riduciQuantita(String nome, int riduci) : void
+    + aumentaQuantita(String nome, int aumenta) : void
+    + getPresenzaCategoria() : boolean
+    + esisteCategoria(String nomeCategoria) : boolean
+    + getListaCategorie() : String[]
+    + eliminaCategoria(String nomeCategoria) : void
+}
+
+class Utente {
+    # username : String
+    # fileStd : GestoreCSV
+    # filePrestiti : GestoreCSV
+
+    + Utente(String username)
+    + getUsername() : String
+    + stampaStato() : String
+    + nuovoPrestito(Categoria categoria, String prestito, int quantita) : void
+    + restituisciPrestito(Categoria categoria, String nome) : void
+    + esisteUtente(String username) : int
+    + getCredenziali(String username) : String[]
+    + creaUtente(String username, String password) : void
+    + zeroUtenti() : boolean
+}
+
+class UtenteSuperiore {
+    + UtenteSuperiore(String username)
+    + stampaStato() : String
+    + creaUtente(String username, String password) : void
+    + cancellaUtente(String username) : void
+}
+
+class MainProgetto {
+    - utente : Utente
+    - categoria : Categoria
+    - sc : Scanner
+    - stato : String
+
+    + main(String[] args) : void
+    + printMenu() : int
+    + logIn() : void
+    + selezionaCategoria() : void
+    + cercaPerNome() : void
+    + prestitoOggetto() : void
+    + restituisciOggetto() : void
+    + creaOggetto() : void
+    + eliminaOggetto() : void
+    + creaCategoria() : void
+    + eliminaCategoria() : void
+    + creaUtente() : void
+    + eliminaUtente() : void
+}
+Categoria --|> GestoreCSV
+UtenteSuperiore --|> Utente
+
+
+Utente --* GestoreCSV
+MainProgetto -- Utente
+MainProgetto -- Categoria
+
+@enduml
