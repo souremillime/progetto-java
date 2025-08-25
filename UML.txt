@@ -40,7 +40,7 @@ class Categoria {
     + riduciQuantita(String nome, int riduci) : void
     + aumentaQuantita(String nome, int aumenta) : void
     + getPresenzaCategoria() : boolean
-    + esisteCategoria(String nomeCategoria) : boolean
+    + getPresenzaCategoria(String nomeCategoria) : boolean
     + getListaCategorie() : String[]
     + eliminaCategoria(String nomeCategoria) : void
 }
@@ -93,7 +93,9 @@ UtenteSuperiore --|> Utente
 
 
 Utente --* GestoreCSV
+
 MainProgetto -- Utente
+MainProgetto -- UtenteSuperiore
 MainProgetto -- Categoria
 
 @enduml

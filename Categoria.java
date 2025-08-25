@@ -102,11 +102,6 @@ public class Categoria extends GestoreCSV{
     public void eliminaOggetto(String nome, int quantita){
         //verifico la sua esistenza
         int posizioneOggetto = esisteOggetto(nome);
-
-        if(posizioneOggetto == -1){
-            System.out.println("l'oggetto non esiste");
-
-        }else{
             //leggo la sua quantità
             int quantitaOggetto = Integer.parseInt(getAtMappaFile(posizioneOggetto, 1)); 
             //se la quantita richiesta è maggiore di quella dell'oggetto viene cancellato
@@ -120,8 +115,6 @@ public class Categoria extends GestoreCSV{
                 riscriviRigaCSV(nuovoOggetto, posizioneOggetto);
                 salvaModifiche();
             }
-
-        }
         
     }
     //riduce la quantità di un oggetto specifico
@@ -133,89 +126,109 @@ public class Categoria extends GestoreCSV{
             System.out.println("l'oggetto non esiste");
 
         }else{
+            //leggo la quantità dell'oggetto
             int quantitaOggetto = Integer.parseInt(getAtMappaFile(posizioneOggetto, 1));
+            //verifico che la quantità sia maggiore della quantità da ridurre
             if(riduci <= quantitaOggetto){
+                //riduco la quantità
                 quantitaOggetto = quantitaOggetto - riduci;
+                //riscrivo la riga
                 riscriviElementoCSV(String.valueOf(quantitaOggetto), 1, posizioneOggetto);
                 salvaModifiche();
-            }else{
-                System.out.println("La quantità degli oggetti è inferiore");
             }
         }
     }
 
     //aumenta la quantita di un oggetto specifico
      public void aumentaQuantita(String nome, int aumenta){
+        //verifico la sua esistenza
         int posizioneOggetto = esisteOggetto(nome);
 
         if(posizioneOggetto == -1){
             System.out.println("l'oggetto non esiste");
 
         }else{
+            //leggo la quantità dell'oggetto
             int quantitaOggetto = Integer.parseInt(getAtMappaFile(posizioneOggetto, 1));
+                //incremento la quantità
                 quantitaOggetto = quantitaOggetto + aumenta;
+                //riscrivo la riga
                 riscriviElementoCSV(String.valueOf(quantitaOggetto), 1, posizioneOggetto);
                 salvaModifiche();
         }
     }
 
 /*static*/
-
+    //verifico la presenza di almeno una categoria
     static boolean getPresenzaCategoria(){
         File cartella = new File(cartellaStd);
+        //verifico che la cartella standard esista e sia una cartella
         if(cartella.isDirectory()){
+            //lista di tutti i file dentro la cartella
             String[] lista = cartella.list();
+            //leggo tutti i file fino a trovare uno in formato .csv
             for (String file : lista) {
                 if( file.endsWith(".csv"))
-                    return true;
+                    return true; //se lo trova restituisce vero
             }
             
         }
-        return false;
+        return false; //se non trova niente restituisce falso
 
     }
-
-    static boolean esisteCategoria(String nomeCategoria){
+    //verifico la presenza di una categoria nello specifico
+    static boolean getPresenzaCategoria(String nomeCategoria){
         File cartella = new File(cartellaStd);
+        //verifico che la cartella standard esista e sia una cartella
         if(cartella.isDirectory()){
+            //lista di tutti i file dentro la cartella
             String[] lista = cartella.list();
+            //leggo tutti i file fino a trovare uno che ha il nome della categoria
             for (String file : lista) {
-                if( file.contains(nomeCategoria))
-                    return true;
+                if(file.contains(nomeCategoria))
+                    return true; //se lo trova restituisce vero
             }
             
         }
-        return false;
+        return false;//altrimenti se non lo trova falso
 
     }
-
+    //restituisce la lista di tutte le categorie presenti nella cartella
     public static String[] getListaCategorie(){
         File cartella = new File(cartellaStd);
         String[] lista = null;
-        int riduci = 0;
+        int riduci = 0; //valore di riduzione della lunghezza del array
         if(cartella.isDirectory()){
+            //lista di tutti i file dentro la cartella
             lista = cartella.list();
             for (int i = 0; i<lista.length; i++) {
-                System.out.println(lista[i]);
+                //se la lista non contiene il nome di un fle con .csv ne cancello il contenuto
                 if(!lista[i].endsWith(".csv")){
                     lista[i] = null;
                     riduci++;
                 }else{
+                    //altrimenti cancello il .csv
                     lista[i] = lista[i].replace(".csv", "");
                 }
             }
+            //se sono stati trvati dei file senza .csv riduco l'array
             if(riduci>0){
+                //nuovo array con lunghezza ridotta
                 String[] riduzione = new String[lista.length - riduci];
                 int i = 0,j = 0;
+
                 while (i < riduzione.length) {
+                    //se trovo un oggetto nullo lo salto
                     if(lista[i] == null){
                         continue;
                     }else{
+                        //altrimeti lo copio nel nuovo array
                         riduzione[j] = lista[i];
                         j++;
                     }
                     i++;
                 }
+                //faccio puntare lista al nuovo array ridotto
                 lista = riduzione;
             }
             
@@ -223,9 +236,10 @@ public class Categoria extends GestoreCSV{
         return lista;
 
     }
-
+    //elimina una categoria
     public static void eliminaCategoria(String nomeCategoria){
         File eliminaFile = new File(cartellaStd + nomeCategoria + ".csv");
+        //se esise la cancella
         if(eliminaFile.isFile()){
             eliminaFile.delete();
         }

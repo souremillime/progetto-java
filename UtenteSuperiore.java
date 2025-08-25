@@ -6,36 +6,34 @@ public class UtenteSuperiore extends Utente{
         super(username);
     }
 
+    //restituisce il livello di accesso e il nome utente
     @Override
     public String stampaStato(){
         return "utente superiore " + username;
     }
 
-
+    //aggiunge un utente di livello superiore nel file degli utenti
     static void creaUtente(String username, String password){
-        if(esisteUtente(username) == -1){
             String[] nuovoUtente = new String[3];
+            //inizializzo l'utente
             nuovoUtente[0] = username;
             nuovoUtente[1] = Integer.toString(password.hashCode());
             nuovoUtente[2] = "sup";
+            //lo aggiungo al file
             fileStd.nuovaRigaCSV(nuovoUtente);
             fileStd.salvaModifiche();
-        }else{
-            System.out.println("L'utente esiste già");
-        }
     }
-
+    //cancella l'utente selezionato
     static void cancellaUtente(String utente){
+        //verrfica l'esistenza
         int posizione = esisteUtente(utente);
-        if(posizione > -1){
-            fileStd.cancellaRigaCSV(posizione);
-            fileStd.salvaModifiche();
-            File cancellaFile = new File(utente + ".csv");
-            if(cancellaFile.isFile()){
-                cancellaFile.delete();
-            }
-        }else{
-            System.out.println("Nessun utente trovato");
+        //se esisiste lo cancella
+        fileStd.cancellaRigaCSV(posizione);
+        fileStd.salvaModifiche();
+        //cancella anche il file dei prestiti
+        File cancellaFile = new File(utente + ".csv");
+        if(cancellaFile.isFile()){
+            cancellaFile.delete();
         }
     }
 
