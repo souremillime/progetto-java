@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -16,7 +17,21 @@ public class GestoreCSV{
     public GestoreCSV(String csvPath) {
         this.csvPath = csvPath;
 
-        try(FileWriter writer = new FileWriter(csvPath, true)){ //"scrivo" il file cosi da crearlo in caso che non esista
+        try{ 
+            File file = new File(csvPath);
+            File parent = file.getParentFile();
+            //verifico l'esistenza di eventuali cartelle contenenti il file (come la cartella Categorie)
+            if (parent != null && !parent.exists()) {
+                if(!parent.mkdirs()){ // crea la cartella se non esiste
+                    System.out.println("Errore durante la creazione delle cartelle contenenti il file");
+                }
+            }
+            //se il file del csv non esiste viene creato
+            if (!file.exists()) {
+                if (!file.createNewFile()) {//creo il file se non esiste
+                    System.out.println("errore durante la creazione del file");
+                }
+            }
             reader = new BufferedReader(new FileReader(csvPath));//preparo il reader
             leggiFile();
 
@@ -41,7 +56,6 @@ public class GestoreCSV{
         String csvString = reader.readLine();
         //verifico che non sia vuoto
         if(csvString == null){
-            System.err.println("file vuoto");//debug
             numCol = 0;
             numRighe = 0;
         }else{
@@ -105,7 +119,6 @@ public class GestoreCSV{
 
     //legge l'intero file e lo salva in memoria (Il reader viene resettato)
     private void leggiFile() throws IOException{
-
         String rigaLetta = "";
         definisciDimensioni();
         String[][] outString = new String[numRighe][numCol];
@@ -171,7 +184,7 @@ public class GestoreCSV{
 
     //aggiunge una riga alla mappa del file
     public void nuovaRigaCSV(String riga[]){
-        
+        vuoto = false;
         numRighe++;
         String[][] nuovaMappa = new String[numRighe][numCol]; //nuovo array con le nuove dimensioni
         //copio le informazioni del vecchio nel nuovo
@@ -187,6 +200,9 @@ public class GestoreCSV{
     //cancella una riga della mappa del file
     public void cancellaRigaCSV(int posi){
         numRighe--;
+        if(numRighe == 0){
+            vuoto = true;
+        }
         String [][] nuovaMappa = new String[numRighe][numCol];
         for (int i = 0; i < numRighe; i++) {
                 if(posi == i){
@@ -211,6 +227,7 @@ public class GestoreCSV{
     public void riscriviElementoCSV(String elemento, int posix, int posiy){
         
         mappaFile[posiy][posix] = elemento;
+        System.out.println(mappaFile[posiy][2]);
 
     }
 
@@ -261,6 +278,7 @@ public class GestoreCSV{
                     if (outString[columnNum].contains("\"\"")) {
                         outString[columnNum] = outString[columnNum].replaceAll("\"\"", "\"");
                     }
+                    System.out.println("trovata: " + outString[columnNum]);
                 }
 
                 //riposizionamento degli indici 
@@ -289,19 +307,21 @@ public class GestoreCSV{
     //prende un array di stringhe e restituisce una stringa nel formato csv
     private String stringToCSV(String[] inString){
         String outString = "";
+        String nuovaStringa = ""; 
 
         for(int i = 0; i< inString.length; i++){
-            inString[i] = inString[i].trim();
+            nuovaStringa = inString[i].trim();//copio il valore della stringa su una nuova stringa così da non influenzare per riferimento l'array
             //verifica della corretta sintassi per il csv, raddoppio eventuali virgolette o le aggiungo in caso di \n o di virgole
-            if(inString[i].contains("\"")){
-                inString[i] = inString[i].replaceAll("\"", "\"\"");
+            if(nuovaStringa.contains("\"")){
+                nuovaStringa = nuovaStringa.replaceAll("\"", "\"\"");
             }
-            if(inString[i].contains("\n") || inString[i].contains(",")){
-                inString[i] = "\"" + inString[i] + "\"";
+            if(nuovaStringa.contains("\n") || nuovaStringa.contains(",")){
+                nuovaStringa = "\"" + nuovaStringa + "\"";
             }
             
-            outString += inString[i] + ",";
+            outString += nuovaStringa + ",";
         }
+        //elimino l'ultima virgola visto che creerebbe un'altra colonna
         outString = outString.substring(0,outString.length()-1);
 
         return outString;

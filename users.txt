@@ -1,4 +1,1 @@
-bob,-946852072,sup
-franco,97717,sup
-fred,102341,std
-admin,92668751,sup
+bob,97717,sup

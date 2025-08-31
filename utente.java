@@ -24,14 +24,29 @@ public class Utente{
 /*gestione prestiti*/
     //crea un nuovo prestioto -> aggiunge un oggetto di una certa quantità ne fil le dei prestiti e lo toglie dalla categoria selezionata
     public void nuovoPrestito(Categoria categoria, String prestito, int quantita){
+        boolean trovato = false;
         //riduco la quantità dell'oggettto
         categoria.riduciQuantita(prestito, quantita);
-        //creao il nuovo oggetto
-        //con nome della categoria, nome dell'oggetto e quantità presa
-        String[] oggettoPreso = new String[]{categoria.getNome(), prestito, String.valueOf(quantita)};
-        //aggiungo la riga
-        filePrestiti.nuovaRigaCSV(oggettoPreso);
-        filePrestiti.salvaModifiche();
+        for(int i = 0; i<filePrestiti.getNumeroRighe(); i++){
+            if(filePrestiti.getAtMappaFile(i, 1).equals(prestito)){
+                //e viene cancellato dal file prestiti
+                quantita = quantita + Integer.parseInt(filePrestiti.getAtMappaFile(i,2));
+                filePrestiti.riscriviElementoCSV(String.valueOf(quantita), 2, i);
+                filePrestiti.salvaModifiche();
+                trovato = true;
+                break;
+            
+            }
+        }
+        if(!trovato){
+            //creao il nuovo oggetto
+            //con nome della categoria, nome dell'oggetto e quantità presa
+            String[] oggettoPreso = new String[]{categoria.getNome(), prestito, String.valueOf(quantita)};
+            //aggiungo la riga
+            filePrestiti.nuovaRigaCSV(oggettoPreso);
+            filePrestiti.salvaModifiche();
+
+        }
 
     }
     

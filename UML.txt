@@ -69,12 +69,17 @@ class UtenteSuperiore {
 }
 
 class MainProgetto {
+
+    + main(String[] args) : void
+}
+
+class Funzioni {
     - utente : Utente
     - categoria : Categoria
     - sc : Scanner
     - stato : String
 
-    + main(String[] args) : void
+    + printStato() : void
     + printMenu() : int
     + logIn() : void
     + selezionaCategoria() : void
@@ -87,6 +92,7 @@ class MainProgetto {
     + eliminaCategoria() : void
     + creaUtente() : void
     + eliminaUtente() : void
+
 }
 Categoria --|> GestoreCSV
 UtenteSuperiore --|> Utente
@@ -94,8 +100,9 @@ UtenteSuperiore --|> Utente
 
 Utente --* GestoreCSV
 
-MainProgetto -- Utente
-MainProgetto -- UtenteSuperiore
-MainProgetto -- Categoria
+Funzioni -- Utente
+Funzioni -- Categoria
+
+MainProgetto -- Funzioni
 
 @enduml

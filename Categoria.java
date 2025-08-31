@@ -8,15 +8,8 @@ public class Categoria extends GestoreCSV{
 
     public Categoria(String pathCategoria) {
         super(cartellaStd + "/" + pathCategoria + ".csv"); //gestione del file csv
-        File cartella = new File(cartellaStd);
-        //creo l cartella standard se non presente
-        if(!cartella.isDirectory()){
-            if(cartella.mkdir()){
-                System.out.println("attenzione, la creazione della cartella contenente le ctegorie non è avvenuta con successo");
-            } 
-        }
         //inizializo il nome della categoria con il nome del file 
-        nomeCategoria = new File(pathCategoria).getName().replace(".csv", "");
+        nomeCategoria = pathCategoria;
 
     }
 
@@ -31,19 +24,26 @@ public class Categoria extends GestoreCSV{
         //stampa il nome della categoria
         System.out.println("\nCategoria: " + nomeCategoria + "\n");
         //verifica l'esistenza di almeno un oggetto
-        if(esisteOggetto(nome)<0){
+        if(esisteOggetto(nome, true)<0){
             System.out.println("nessun oggetto trovato");
         }else{
-            System.out.println("nome, quantita, descrizione");
+            System.out.println("\t  nome, quantità, descrizione");
             for (int i = 0; i<getNumeroRighe(); i++) {
                 if(getAtMappaFile(i,0).contains(nome)){
                     sottoStringa = getAtMappaFile(i,2);
+                    System.out.println(sottoStringa);//debug
                     //taglio la stringa se troppo lunga e aggiungo ...
+                    if(sottoStringa.contains("\n")){
+                        sottoStringa = sottoStringa.substring(0,sottoStringa.indexOf("\n")) + "...";
+                    }
+                    if(sottoStringa.startsWith("\n")){
+                        sottoStringa = sottoStringa.replaceAll("\n", "");
+                    }
                     if(sottoStringa.length()>19){
                         sottoStringa = sottoStringa.substring(0, 20);
                         if(getAtMappaFile(i, 2).length() >20){
                             sottoStringa += "...";
-                        } 
+                        }
                     }
                     System.out.printf("\t|  %s  |  %s  |  %s  |\n", getAtMappaFile(i,0), getAtMappaFile(i,1), sottoStringa);
                 }
@@ -69,6 +69,23 @@ public class Categoria extends GestoreCSV{
         for (int i = 0; i<getNumeroRighe(); i++) {
             if(getAtMappaFile(i,0).equals(nomeOggetto)){
                 return i;
+            }
+        }
+        return -1;
+    }
+
+    public int esisteOggetto(String nomeOggetto, boolean contiene){
+        if(contiene){
+            for (int i = 0; i<getNumeroRighe(); i++) {
+                if(getAtMappaFile(i,0).contains(nomeOggetto)){
+                    return i;
+                }
+            }
+        }else{
+            for (int i = 0; i<getNumeroRighe(); i++) {
+                if(getAtMappaFile(i,0).equals(nomeOggetto)){
+                    return i;
+                }
             }
         }
         return -1;
@@ -185,7 +202,7 @@ public class Categoria extends GestoreCSV{
             String[] lista = cartella.list();
             //leggo tutti i file fino a trovare uno che ha il nome della categoria
             for (String file : lista) {
-                if(file.contains(nomeCategoria))
+                if(file.contains(nomeCategoria + ".csv"))
                     return true; //se lo trova restituisce vero
             }
             
@@ -238,7 +255,7 @@ public class Categoria extends GestoreCSV{
     }
     //elimina una categoria
     public static void eliminaCategoria(String nomeCategoria){
-        File eliminaFile = new File(cartellaStd + nomeCategoria + ".csv");
+        File eliminaFile = new File(cartellaStd + "/" + nomeCategoria + ".csv");
         //se esise la cancella
         if(eliminaFile.isFile()){
             eliminaFile.delete();
