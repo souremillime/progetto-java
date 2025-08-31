@@ -74,7 +74,7 @@ public class Funzioni{
                 UtenteSuperiore.creaUtente(username, password);
                 utente = new UtenteSuperiore(username);
                 //modifica lo stato e verifica se è stata selezionata una categoria
-                stato = (categoria == null) ? "\n" + utente.stampaStato() + "nessuna categoria\n" : "\n" + utente.stampaStato() + " : " + categoria.getNome() + "\n";
+                stato = (categoria == null) ? "\n" + utente.stampaStato()+ " : " + "nessuna categoria\n" : "\n" + utente.stampaStato() + " : " + categoria.getNome() + "\n";
 
             }
         }else{
@@ -248,7 +248,12 @@ public class Funzioni{
                 categoria.aggiungiOggetto(nuovoOggetto);
             
             }else{
-                System.out.print("l'oggetto è già presente in questa categoria\n");
+                System.out.print("l'oggetto è già presente in questa categoria, vuoi aumentarne la quantità? [S o N]\n");
+                if(sc.next().toUpperCase().equals("S")){
+                    System.out.print("Inserisci la quantita da aggiungere: ");
+                    nuovoOggetto[1] = sc.next(); //quantità
+                    categoria.aumentaQuantita(nuovoOggetto[0], Integer.parseInt(nuovoOggetto[1]));
+                }
 
             }
         }

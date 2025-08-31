@@ -227,7 +227,6 @@ public class GestoreCSV{
     public void riscriviElementoCSV(String elemento, int posix, int posiy){
         
         mappaFile[posiy][posix] = elemento;
-        System.out.println(mappaFile[posiy][2]);
 
     }
 
@@ -278,7 +277,6 @@ public class GestoreCSV{
                     if (outString[columnNum].contains("\"\"")) {
                         outString[columnNum] = outString[columnNum].replaceAll("\"\"", "\"");
                     }
-                    System.out.println("trovata: " + outString[columnNum]);
                 }
 
                 //riposizionamento degli indici 

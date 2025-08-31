@@ -1,13 +1,13 @@
 
 public class Utente{
     protected String username;
-    protected static final GestoreCSV fileStd = new GestoreCSV("users.txt"); //file con tutti gli utenti
+    protected static final GestoreCSV fileStd = new GestoreCSV("Utenti/utenti.txt"); //file con tutti gli utenti
     protected final GestoreCSV filePrestiti; //file con la lista dei prestiti
 
     //costruttore
     public Utente(String username){
         this.username = username;
-        filePrestiti = new GestoreCSV(username+".csv");
+        filePrestiti = new GestoreCSV("Utenti/"+username+".csv");
     }
 /*get*/
     //restituisce il nome utente

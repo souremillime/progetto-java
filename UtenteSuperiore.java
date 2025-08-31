@@ -31,7 +31,7 @@ public class UtenteSuperiore extends Utente{
         fileStd.cancellaRigaCSV(posizione);
         fileStd.salvaModifiche();
         //cancella anche il file dei prestiti
-        File cancellaFile = new File(utente + ".csv");
+        File cancellaFile = new File("Utenti/"+utente + ".csv");
         if(cancellaFile.isFile()){
             cancellaFile.delete();
         }

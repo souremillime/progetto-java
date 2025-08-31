@@ -31,7 +31,6 @@ public class Categoria extends GestoreCSV{
             for (int i = 0; i<getNumeroRighe(); i++) {
                 if(getAtMappaFile(i,0).contains(nome)){
                     sottoStringa = getAtMappaFile(i,2);
-                    System.out.println(sottoStringa);//debug
                     //taglio la stringa se troppo lunga e aggiungo ...
                     if(sottoStringa.contains("\n")){
                         sottoStringa = sottoStringa.substring(0,sottoStringa.indexOf("\n")) + "...";
