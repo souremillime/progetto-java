@@ -35,6 +35,7 @@ class Categoria {
     + cercaPerNome(String nome) : void
     + getQuantita(String nome) : int
     + esisteOggetto(String nomeOggetto) : int
+    + esisteOggetto(String nomeOggetto, boolean contiene) : int
     + aggiungiOggetto(String[] oggetto) : void
     + eliminaOggetto(String nome, int quantita) : void
     + riduciQuantita(String nome, int riduci) : void
