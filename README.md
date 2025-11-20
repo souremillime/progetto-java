@@ -8,3 +8,6 @@ L’interfaccia del programma consiste in un menu numerato su terminale, che con
 
 # Diagramma di flusso: 
 ![flowchart](flowChart.png)
+
+mermind
+  A--B
