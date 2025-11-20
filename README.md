@@ -10,7 +10,5 @@ L’interfaccia del programma consiste in un menu numerato su terminale, che con
 ![flowchart](flowChart.png)
 
 '''mermaid
-graph TD;
-  A--B;
-  D-->C;
+  info
 '''
